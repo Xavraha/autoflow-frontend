@@ -1,6 +1,6 @@
 // src/components/JobList.jsx
+import Step from './Step'; // Importamos el nuevo componente
 
-// 1. Aceptamos la nueva propiedad 'onJobDeleted'
 function JobList({ jobs, onJobDeleted }) {
 
   const handleDelete = async (jobId) => {
@@ -27,15 +27,22 @@ function JobList({ jobs, onJobDeleted }) {
       ) : (
         <ul>
           {jobs.map(job => (
-            <li key={job._id}>
+            <li key={job._id} style={{ marginBottom: '20px' }}>
               <strong>
                 {job.vehicleInfo?.make} {job.vehicleInfo?.model} ({job.vehicleInfo?.year})
               </strong>
-              : {job.tasks && job.tasks.length > 0 ? job.tasks[0].title : 'Sin tareas asignadas'}
-              
               <button onClick={() => handleDelete(job._id)} style={{ marginLeft: '10px' }}>
                 Borrar
               </button>
+
+              {job.tasks?.map(task => (
+                <div key={task._id} style={{ marginTop: '10px' }}>
+                  <h4 style={{ margin: 0 }}>Tarea: {task.title} ({task.technician})</h4>
+                  {task.steps?.map(step => (
+                    <Step key={step._id} job={job} task={task} step={step} onUpdate={onJobDeleted} />
+                  ))}
+                </div>
+              ))}
             </li>
           ))}
         </ul>
