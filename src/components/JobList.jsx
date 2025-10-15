@@ -1,12 +1,13 @@
 // src/components/JobList.jsx
 import Step from './Step';
 import AddStepForm from './AddStepForm';
+import { API_URL } from './apiConfig';
 
 function JobList({ jobs, customers, onJobDeleted }) {
   const handleDelete = async (jobId) => {
     if (window.confirm('¿Estás seguro de que quieres borrar este trabajo?')) {
       try {
-        await fetch(`http://localhost:3000/api/jobs/${jobId}`, { method: 'DELETE' });
+        await fetch(`${API_URL}/api/jobs/${jobId}`, { method: 'DELETE' });
         onJobDeleted();
       } catch (error) {
         console.error('Error al borrar el trabajo:', error);

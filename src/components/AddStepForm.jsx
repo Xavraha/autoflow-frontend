@@ -1,5 +1,5 @@
 // src/components/AddStepForm.jsx
-
+import { API_URL } from '../apiConfig';
 import { useState } from 'react';
 
 function AddStepForm({ jobId, taskId, onStepAdded }) {
@@ -13,7 +13,7 @@ function AddStepForm({ jobId, taskId, onStepAdded }) {
     }
 
     try {
-      await fetch(`http://localhost:3000/api/jobs/${jobId}/tasks/${taskId}/steps`, {
+      await fetch(`${API_URL}/api/jobs/${jobId}/tasks/${taskId}/steps`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ description }),

@@ -1,5 +1,5 @@
 // src/components/AddCustomerForm.jsx
-
+import { API_URL } from '../apiConfig';
 import { useState } from 'react';
 
 function AddCustomerForm({ onCustomerAdded }) {
@@ -16,7 +16,7 @@ function AddCustomerForm({ onCustomerAdded }) {
     const newCustomer = { name, phone };
 
     try {
-      await fetch('http://localhost:3000/api/customers', {
+      await fetch(`${API_URL}/api/customers`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newCustomer),

@@ -1,6 +1,7 @@
 // src/components/AddJobForm.jsx
 import { useState } from 'react';
 import VinScanner from './VinScanner';
+import { API_URL } from '../apiConfig';
 
 function AddJobForm({ customers, onJobAdded }) {
   // --- Estados para toda la información ---
@@ -23,7 +24,7 @@ function AddJobForm({ customers, onJobAdded }) {
     setScannerOpen(false);
     alert(`VIN Escaneado: ${vin}. Buscando información...`);
     try {
-      const response = await fetch(`http://localhost:3000/api/vehicle-info/${vin}`);
+      const response = await fetch(`${API_URL}/api/vehicle-info/${vin}`);
       if (!response.ok) throw new Error('VIN no encontrado en la base de datos de NHTSA.');
       
       const data = await response.json();
@@ -63,7 +64,7 @@ function AddJobForm({ customers, onJobAdded }) {
     };
 
     try {
-      await fetch('http://localhost:3000/api/jobs', {
+      await fetch(`${API_URL}/api/jobs`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newJob),

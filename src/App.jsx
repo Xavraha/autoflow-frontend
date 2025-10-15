@@ -1,61 +1,76 @@
 // src/App.jsx
 
+import { API_URL } from './apiConfig'; 
 import { useState, useEffect } from 'react';
-import JobList from './components/JobList';
-import AddJobForm from './components/AddJobForm';
+import { Routes, Route } from 'react-router-dom';
+import './App.css';
+import Dashboard from './Dashboard';
+import JobDetailPage from './JobDetailPage';
 import AddCustomerForm from './components/AddCustomerForm';
+import AddJobForm from './components/AddJobForm';
 
+// --- COMPONENTE PARA LA PÁGINA PRINCIPAL ---
+// Muestra el tablero y los formularios de creación.
+function MainPage({ jobs, customers, fetchAllData }) {
+  return (
+    <div className="App">
+      <h1>AutoFlow</h1>
+      <Dashboard jobs={jobs} customers={customers} />
+      <hr />
+      <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+        <div style={{ flex: 1, minWidth: '300px' }}>
+          <AddCustomerForm onCustomerAdded={fetchAllData} />
+        </div>
+        <div style={{ flex: 2, minWidth: '400px' }}>
+          <AddJobForm customers={customers} onJobAdded={fetchAllData} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// --- COMPONENTE PRINCIPAL DE LA APP ---
+// Se encarga de obtener los datos y definir las rutas.
 function App() {
   // --- ESTADOS ---
-  // Almacenes para guardar los datos que vienen del backend
   const [jobs, setJobs] = useState([]);
   const [customers, setCustomers] = useState([]);
 
-  // --- FUNCIONES PARA COMUNICARSE CON EL BACKEND ---
-
-  // Función para obtener TODOS los trabajos
-  const fetchJobs = async () => {
+  // --- LÓGICA PARA OBTENER DATOS ---
+  const fetchAllData = async () => {
     try {
-      console.log("Intentando obtener trabajos...");
-      const response = await fetch('http://localhost:3000/api/jobs');
-      const data = await response.json();
-      setJobs(data);
+      const [jobsRes, customersRes] = await Promise.all([
+        fetch(`${API_URL}/api/jobs`),
+        fetch(`${API_URL}/api/customers`)
+      ]);
+      const jobsData = await jobsRes.json();
+      const customersData = await customersRes.json();
+      setJobs(jobsData);
+      setCustomers(customersData);
     } catch (error) {
-      console.error("Error fetching jobs:", error);
+      console.error("Error fetching data:", error);
     }
   };
 
-  // Función para obtener TODOS los clientes
-  const fetchCustomers = async () => {
-    try {
-      console.log("Intentando obtener clientes...");
-      const response = await fetch('http://localhost:3000/api/customers');
-      const data = await response.json();
-      setCustomers(data);
-    } catch (error) {
-      console.error("Error fetching customers:", error);
-    }
-  };
-
-  // --- EL INTERRUPTOR DE ENCENDIDO ---
-  // Esto se ejecuta UNA SOLA VEZ cuando la aplicación carga por primera vez
+  // Se ejecuta una vez cuando la aplicación carga
   useEffect(() => {
-    fetchJobs();
-    fetchCustomers();
-  }, []); // El array vacío [] asegura que solo se ejecute una vez
+    fetchAllData();
+  }, []);
 
+  // --- DEFINICIÓN DE RUTAS ---
   return (
-    <div>
-      <h1>AutoFlow App</h1>
-      
-      <AddCustomerForm onCustomerAdded={fetchCustomers} />
-      <hr />
-      
-      <AddJobForm customers={customers} onJobAdded={fetchJobs} />
-      <hr />
-      
-      <JobList jobs={jobs} customers={customers} onJobDeleted={fetchJobs} />
-    </div>
+    <Routes>
+      {/* Ruta para la página principal */}
+      <Route 
+        path="/" 
+        element={<MainPage jobs={jobs} customers={customers} fetchAllData={fetchAllData} />} 
+      />
+      {/* Ruta para la página de detalles de un trabajo específico */}
+      <Route 
+        path="/job/:jobId" 
+        element={<JobDetailPage />} 
+      />
+    </Routes>
   );
 }
 

@@ -1,0 +1,65 @@
+/* src/Dashboard.css */
+.dashboard-container {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto; /* Permite scroll horizontal si las columnas no caben */
+  padding: 20px 0;
+}
+
+.status-column {
+  background-color: #2c313a;
+  border-radius: 8px;
+  min-width: 300px;
+  max-width: 300px;
+  height: fit-content;
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.column-title {
+  font-size: 1.2em;
+  font-weight: bold;
+  padding: 10px;
+  border-bottom: 2px solid #444;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.job-cards-container {
+  min-height: 100px; /* Espacio mínimo para arrastrar tarjetas */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.job-card {
+  background-color: #3b424f;
+  border-radius: 6px;
+  padding: 15px;
+  cursor: pointer;
+  border-left: 5px solid;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.job-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Colores por estado */
+.job-card.pending_diagnosis { border-color: #f0ad4e; } /* Naranja */
+.job-card.awaiting_parts { border-color: #d9534f; } /* Rojo */
+.job-card.in_progress { border-color: #007bff; } /* Azul */
+.job-card.completed { border-color: #5cb85c; } /* Verde */
+
+.job-card strong {
+  display: block;
+  font-size: 1.1em;
+  margin-bottom: 5px;
+}
+
+.job-card p {
+  font-size: 0.9em;
+  color: #a0a0a0;
+  margin: 0;
+}

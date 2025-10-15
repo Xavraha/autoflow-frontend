@@ -1,0 +1,58 @@
+/* src/JobDetailPage.css */
+
+.job-detail-page {
+  max-width: 900px;
+  margin: 0 auto; /* Centra la página */
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 20px;
+  color: var(--primary-blue);
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.job-detail-card {
+  background-color: var(--background-light);
+  border-radius: 8px;
+  padding: 25px 30px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.job-detail-header strong {
+  font-size: 1.5em;
+  color: var(--text-primary);
+}
+
+.job-detail-header p {
+  color: var(--text-secondary);
+}
+
+.task-item {
+  border-top: 1px dashed var(--border-color);
+  padding-top: 20px;
+  margin-top: 20px;
+}
+
+.task-item:first-child {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+.task-item h4 {
+  font-size: 1.2em;
+  margin-bottom: 5px;
+}
+
+.task-item > p { /* La descripción de la tarea */
+  font-style: italic;
+  color: #ccc;
+  margin-bottom: 20px;
+}
