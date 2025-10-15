@@ -1,5 +1,5 @@
 // src/components/AddStepForm.jsx
-import { API_URL } from './apiConfig';
+import { API_URL } from '../apiConfig';
 import { useState } from 'react';
 
 function AddStepForm({ jobId, taskId, onStepAdded }) {

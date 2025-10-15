@@ -1,6 +1,6 @@
 // src/components/Step.jsx
 import { useState } from 'react';
-import { API_URL } from './apiConfig'; // Importamos la URL correcta
+import { API_URL } from '../apiConfig'; // Importamos la URL correcta
 
 // Función para detectar si la URL es de un video
 const isVideoUrl = (url) => {

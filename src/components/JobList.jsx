@@ -1,7 +1,7 @@
 // src/components/JobList.jsx
 import Step from './Step';
 import AddStepForm from './AddStepForm';
-import { API_URL } from './apiConfig';
+import { API_URL } from '../apiConfig';
 
 function JobList({ jobs, customers, onJobDeleted }) {
   const handleDelete = async (jobId) => {
