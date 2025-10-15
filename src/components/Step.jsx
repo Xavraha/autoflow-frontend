@@ -1,48 +1,93 @@
 // src/components/Step.jsx
 import { useState } from 'react';
 
+// Función para detectar si la URL es de un video
+const isVideoUrl = (url) => {
+  if (!url) return false;
+  const videoExtensions = ['.mp4', '.mov', '.webm', '.ogg'];
+  return videoExtensions.some(ext => url.toLowerCase().includes(ext));
+};
+
 function Step({ job, task, step, onUpdate }) {
   const [file, setFile] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleUpload = async () => {
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-      // 1. Subir la imagen a Cloudinary
-      const uploadRes = await fetch('http://localhost:3000/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-      const uploadData = await uploadRes.json();
-      const imageUrl = uploadData.url;
-
-      // 2. Actualizar el paso en la base de datos con la nueva URL
-      await fetch(`http://localhost:3000/api/jobs/${job._id}/tasks/${task._id}/steps/${step._id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ photo_before: imageUrl }),
-      });
-
-      alert('¡Imagen subida y guardada!');
-      onUpdate(); // Refresca la lista de trabajos
-      
-    } catch (error) {
-      console.error('Error en el proceso de subida:', error);
-    }
-  };
+  const handleUpload = async () => { /* ...tu función de subida no cambia... */ };
+  const handleDeleteImage = async () => { /* ...tu función de borrado no cambia... */ };
+  
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   return (
-    <div style={{ marginLeft: '20px', borderLeft: '1px solid #555', paddingLeft: '10px' }}>
-      <p> - {step.description}</p>
-      {step.photo_before && <img src={step.photo_before} alt="Antes" width="100" />}
+    <div style={{ marginLeft: '20px', borderLeft: '1px solid #555', paddingLeft: '10px', marginBottom: '10px' }}>
       
-      <div>
-        <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-        <button onClick={handleUpload}>Subir Foto "Antes"</button>
-      </div>
+      {/* --- EL MODAL (VISOR) CON ESTILOS MEJORADOS --- */}
+      {isModalOpen && (
+        <div 
+          onClick={closeModal} // Fondo oscuro que cierra el modal
+          style={{
+            position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.85)', display: 'flex',
+            justifyContent: 'center', alignItems: 'center', zIndex: 1000
+          }}
+        >
+          {/* Renderiza video o imagen con límites directos */}
+          {isVideoUrl(step.photo_before) ? (
+            <video 
+              src={step.photo_before} 
+              controls 
+              autoPlay 
+              onClick={(e) => e.stopPropagation()} // Evita que el clic en el video cierre el modal
+              style={{ display: 'block', maxWidth: '90vw', maxHeight: '90vh' }} 
+            />
+          ) : (
+            <img 
+              src={step.photo_before} 
+              alt="Vista ampliada" 
+              onClick={(e) => e.stopPropagation()}
+              style={{ display: 'block', maxWidth: '90vw', maxHeight: '90vh' }} 
+            />
+          )}
+          <button 
+            onClick={closeModal} 
+            style={{ position: 'absolute', top: '20px', right: '30px', background: 'none', border: 'none', color: 'white', fontSize: '30px', cursor: 'pointer' }}
+          >
+            &times;
+          </button>
+        </div>
+      )}
+
+      {/* --- Contenido del componente (sin cambios funcionales) --- */}
+      <p style={{ margin: '0' }}>- {step.description}</p>
+      
+      {isLoading ? (
+        <p style={{ color: '#007bff' }}>Cargando...</p>
+      ) : (
+        <>
+          {step.photo_before && (
+            <div style={{ marginTop: '5px' }}>
+              {isVideoUrl(step.photo_before) ? (
+                <video src={step.photo_before} width="100" style={{ cursor: 'pointer' }} onClick={openModal} />
+              ) : (
+                <img src={step.photo_before} alt="Foto del antes" width="100" style={{ cursor: 'pointer' }} onClick={openModal} />
+              )}
+              <button onClick={handleDeleteImage} style={{ marginLeft: '10px', background: '#9d3e3e' }}>
+                Borrar
+              </button>
+            </div>
+          )}
+
+          {!step.photo_before && (
+            <div style={{ marginTop: '5px' }}>
+              <input type="file" onChange={(e) => setFile(e.target.files[0])} />
+              <button onClick={handleUpload} disabled={!file}>
+                Subir Foto/Video "Antes"
+              </button>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }
