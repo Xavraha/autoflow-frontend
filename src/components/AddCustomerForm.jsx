@@ -1,5 +1,5 @@
 // src/components/AddCustomerForm.jsx
-import { API_URL } from '../apiConfig';
+import { API_URL } from './apiConfig';
 import { useState } from 'react';
 
 function AddCustomerForm({ onCustomerAdded }) {

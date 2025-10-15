@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import './JobDetailPage.css'; // 1. Importamos los nuevos estilos
-import { API_URL } from '../apiConfig';
+import { API_URL } from './apiConfig';
 
 import JobStatusUpdater from './components/JobStatusUpdater';
 import Step from './components/Step';

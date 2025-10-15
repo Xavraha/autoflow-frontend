@@ -1,5 +1,5 @@
 // src/components/JobStatusUpdater.jsx
-import { API_URL } from '../apiConfig';
+import { API_URL } from './apiConfig';
 import { useState } from 'react';
 
 const STATUSES = {

@@ -1,7 +1,7 @@
 // src/components/AddJobForm.jsx
 import { useState } from 'react';
 import VinScanner from './VinScanner';
-import { API_URL } from '../apiConfig';
+import { API_URL } from './apiConfig';
 
 function AddJobForm({ customers, onJobAdded }) {
   // --- Estados para toda la información ---
