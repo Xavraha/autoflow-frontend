@@ -1,12 +1,19 @@
 // src/components/JobCard.jsx
-import { Link } from 'react-router-dom'; // 1. Importar Link
+import { Link } from 'react-router-dom';
 
 function JobCard({ job, customer }) {
-  const statusClasses = { /* ... (sin cambios) ... */ };
+  // Objeto para las clases CSS y colores de borde
+  const statusClasses = {
+    pending_diagnosis: 'pending_diagnosis',
+    awaiting_parts: 'awaiting_parts',
+    in_progress: 'in_progress',
+    completed: 'completed',
+    canceled: 'canceled' // Mantenemos el nuevo estado
+  };
   const cardClass = statusClasses[job.status] || 'pending_diagnosis';
 
   return (
-    // 2. Envolver todo en un componente Link
+    // Simplemente un enlace que envuelve la tarjeta
     <Link to={`/job/${job._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
       <div className={`job-card ${cardClass}`}>
         <strong>{job.vehicleInfo.make} {job.vehicleInfo.model} ({job.vehicleInfo.year})</strong>
