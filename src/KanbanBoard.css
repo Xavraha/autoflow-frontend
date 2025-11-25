@@ -1,24 +1,141 @@
-/* Kanban Board - Cyberpunk Enhanced */
+/* Kanban Board - Bright Cyberpunk Design */
+
+.kanban-view {
+  padding: 1.5rem;
+  min-height: 100vh;
+}
+
+/* Stats Header */
+.stats-header {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  flex: 1;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(20, 20, 30, 0.9));
+  border: 2px solid;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: currentColor;
+  box-shadow: 0 0 15px currentColor;
+}
+
+.stat-card.vehicles {
+  border-color: #00f3ff;
+  color: #00f3ff;
+}
+
+.stat-card.critical {
+  border-color: #ff0055;
+  color: #ff0055;
+}
+
+.stat-card.efficiency {
+  border-color: #5cb85c;
+  color: #5cb85c;
+}
+
+.stat-icon {
+  font-size: 2.5rem;
+  opacity: 0.9;
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  opacity: 0.8;
+}
+
+.stat-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-shadow: 0 0 10px currentColor;
+}
+
+/* Kanban Header */
+.kanban-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid rgba(0, 243, 255, 0.3);
+}
+
+.kanban-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.8rem;
+  color: #fff;
+  margin: 0;
+}
+
+.kanban-title .subtitle {
+  color: #00f3ff;
+  font-size: 1rem;
+}
+
+.add-task-btn {
+  background: linear-gradient(135deg, #00f3ff, #0066ff);
+  border: none;
+  border-radius: 6px;
+  padding: 0.8rem 2rem;
+  color: #fff;
+  font-weight: bold;
+  font-family: 'Orbitron', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+}
+
+.add-task-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 25px rgba(0, 243, 255, 0.6);
+}
+
+/* Dashboard Container */
 .dashboard-container {
   display: flex;
-  gap: 20px;
+  gap: 1.5rem;
   overflow-x: auto;
-  padding: 20px;
-  height: calc(100vh - 100px);
+  padding-bottom: 2rem;
+  height: calc(100vh - 350px);
   align-items: stretch;
-  background: linear-gradient(180deg, rgba(10, 10, 15, 0.8) 0%, rgba(20, 20, 30, 0.9) 100%);
 }
 
 .status-column {
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(20, 20, 30, 0.6));
+  background: linear-gradient(135deg, rgba(10, 10, 20, 0.95), rgba(20, 20, 35, 0.95));
   backdrop-filter: blur(10px);
-  border-radius: 12px;
+  border-radius: 16px;
   flex: 1;
-  min-width: 300px;
+  min-width: 320px;
   display: flex;
   flex-direction: column;
-  border: 2px solid #444;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  border: 3px solid;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
   transition: all 0.4s ease;
   position: relative;
   overflow: hidden;
@@ -30,49 +147,51 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
+  height: 4px;
   background: linear-gradient(90deg, transparent, currentColor, transparent);
-  opacity: 0.6;
+  opacity: 0.8;
+  box-shadow: 0 0 20px currentColor;
 }
 
 .status-column:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 243, 255, 0.2);
+  transform: translateY(-6px);
+  box-shadow: 0 15px 50px rgba(0, 243, 255, 0.3);
+}
+
+/* Column Header */
+.column-header {
+  padding: 1.5rem;
+  border-bottom: 2px solid currentColor;
+  background: rgba(0, 0, 0, 0.3);
 }
 
 .column-title {
-  font-size: 1.2em;
+  font-size: 1rem;
   font-weight: bold;
-  padding: 18px;
-  margin: 0;
+  margin: 0 0 0.5rem 0;
   text-align: center;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-  color: #fff;
+  color: currentColor;
   text-transform: uppercase;
   letter-spacing: 2px;
   font-family: 'Orbitron', sans-serif;
-  position: relative;
+  text-shadow: 0 0 15px currentColor;
 }
 
-.column-title::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60%;
-  height: 2px;
-  background: currentColor;
-  box-shadow: 0 0 10px currentColor;
+.task-count {
+  display: block;
+  text-align: center;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
 }
 
 .job-cards-container {
   flex: 1;
   overflow-y: auto;
-  padding: 15px;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 1rem;
 }
 
 .job-cards-container::-webkit-scrollbar {
@@ -85,93 +204,69 @@
 }
 
 .job-cards-container::-webkit-scrollbar-thumb {
-  background: rgba(0, 243, 255, 0.3);
+  background: currentColor;
   border-radius: 4px;
+  opacity: 0.5;
 }
 
-.job-cards-container::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 243, 255, 0.5);
+/* Column Glow - bottom gradient */
+.column-glow {
+  height: 4px;
+  width: 100%;
+  filter: blur(2px);
+  box-shadow: 0 0 20px currentColor;
 }
 
-/* --- NEON STYLES PER COLUMN --- */
-
-/* Pending Diagnosis - Orange */
+/* Status Colors with BRIGHT borders */
 .status-column.pending_diagnosis {
   border-color: #f0ad4e;
-  box-shadow: 0 0 20px rgba(240, 173, 78, 0.3),
-    inset 0 0 15px rgba(240, 173, 78, 0.05);
   color: #f0ad4e;
+  box-shadow: 0 0 30px rgba(240, 173, 78, 0.4),
+    inset 0 0 20px rgba(240, 173, 78, 0.05);
 }
 
-.status-column.pending_diagnosis .column-title {
-  color: #f0ad4e;
-  text-shadow: 0 0 10px rgba(240, 173, 78, 0.6);
-}
-
-/* Awaiting Parts - Red */
 .status-column.awaiting_parts {
-  border-color: #d9534f;
-  box-shadow: 0 0 20px rgba(217, 83, 79, 0.3),
-    inset 0 0 15px rgba(217, 83, 79, 0.05);
-  color: #d9534f;
+  border-color: #ff0055;
+  color: #ff0055;
+  box-shadow: 0 0 30px rgba(255, 0, 85, 0.4),
+    inset 0 0 20px rgba(255, 0, 85, 0.05);
 }
 
-.status-column.awaiting_parts .column-title {
-  color: #d9534f;
-  text-shadow: 0 0 10px rgba(217, 83, 79, 0.6);
-}
-
-/* In Progress - Cyan */
 .status-column.in_progress {
   border-color: #00f3ff;
-  box-shadow: 0 0 20px rgba(0, 243, 255, 0.3),
-    inset 0 0 15px rgba(0, 243, 255, 0.05);
   color: #00f3ff;
+  box-shadow: 0 0 30px rgba(0, 243, 255, 0.4),
+    inset 0 0 20px rgba(0, 243, 255, 0.05);
 }
 
-.status-column.in_progress .column-title {
-  color: #00f3ff;
-  text-shadow: 0 0 10px rgba(0, 243, 255, 0.6);
-}
-
-/* Completed - Green */
 .status-column.completed {
   border-color: #5cb85c;
-  box-shadow: 0 0 20px rgba(92, 184, 92, 0.3),
-    inset 0 0 15px rgba(92, 184, 92, 0.05);
   color: #5cb85c;
+  box-shadow: 0 0 30px rgba(92, 184, 92, 0.4),
+    inset 0 0 20px rgba(92, 184, 92, 0.05);
 }
 
-.status-column.completed .column-title {
-  color: #5cb85c;
-  text-shadow: 0 0 10px rgba(92, 184, 92, 0.6);
-}
-
-/* Canceled - Gray */
 .status-column.canceled {
-  border-color: #6c757d;
-  box-shadow: 0 0 20px rgba(108, 117, 125, 0.3),
-    inset 0 0 15px rgba(108, 117, 125, 0.05);
-  color: #6c757d;
+  border-color: #999;
+  color: #999;
+  box-shadow: 0 0 30px rgba(153, 153, 153, 0.3),
+    inset 0 0 20px rgba(153, 153, 153, 0.05);
+  opacity: 0.7;
 }
 
-.status-column.canceled .column-title {
-  color: #6c757d;
-  text-shadow: 0 0 10px rgba(108, 117, 125, 0.6);
-}
-
-/* --- JOB CARDS --- */
+/* Job Cards */
 .job-card {
-  background: linear-gradient(135deg, rgba(30, 35, 45, 0.8), rgba(40, 45, 55, 0.9));
+  background: linear-gradient(135deg, rgba(30, 35, 45, 0.9), rgba(40, 45, 55, 0.95));
   backdrop-filter: blur(5px);
-  border-radius: 8px;
-  padding: 16px;
+  border-radius: 10px;
+  padding: 1.2rem;
   cursor: pointer;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-left: 4px solid transparent;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-left: 4px solid currentColor;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .job-card::before {
@@ -181,7 +276,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.02));
+  background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.03));
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -191,82 +286,52 @@
 }
 
 .job-card:hover {
-  transform: translateY(-3px) translateX(2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-/* Card border colors */
-.job-card.pending_diagnosis {
-  border-left-color: #f0ad4e;
-}
-
-.job-card.pending_diagnosis:hover {
-  box-shadow: -4px 8px 20px rgba(240, 173, 78, 0.3);
-}
-
-.job-card.awaiting_parts {
-  border-left-color: #d9534f;
-}
-
-.job-card.awaiting_parts:hover {
-  box-shadow: -4px 8px 20px rgba(217, 83, 79, 0.3);
-}
-
-.job-card.in_progress {
-  border-left-color: #00f3ff;
-}
-
-.job-card.in_progress:hover {
-  box-shadow: -4px 8px 20px rgba(0, 243, 255, 0.3);
-}
-
-.job-card.completed {
-  border-left-color: #5cb85c;
-}
-
-.job-card.completed:hover {
-  box-shadow: -4px 8px 20px rgba(92, 184, 92, 0.3);
-}
-
-.job-card.canceled {
-  border-left-color: #6c757d;
-  opacity: 0.7;
-}
-
-.job-card.canceled:hover {
-  box-shadow: -4px 8px 20px rgba(108, 117, 125, 0.3);
+  transform: translateX(5px);
+  border-color: currentColor;
+  box-shadow: -5px 5px 25px rgba(0, 0, 0, 0.5);
 }
 
 .job-card strong {
   display: block;
-  font-size: 1.1em;
+  font-size: 1.05rem;
   color: #fff;
-  margin-bottom: 8px;
+  margin-bottom: 0.8rem;
   font-weight: 600;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .job-card p {
-  font-size: 0.9em;
-  color: #bbb;
-  margin: 4px 0;
-  line-height: 1.4;
+  font-size: 0.9rem;
+  color: #ccc;
+  margin: 0.4rem 0;
+  line-height: 1.5;
 }
 
 .job-card p:first-of-type {
-  color: #00f3ff;
-  font-weight: 500;
+  color: currentColor;
+  font-weight: 600;
 }
 
 /* Responsive */
 @media (max-width: 1200px) {
-  .status-column {
-    min-width: 280px;
+  .stats-header {
+    flex-wrap: wrap;
+  }
+
+  .stat-card {
+    min-width: calc(50% - 0.75rem);
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 968px) {
+  .stats-header {
+    flex-direction: column;
+  }
+
+  .stat-card {
+    width: 100%;
+  }
+
   .dashboard-container {
     flex-direction: column;
     height: auto;
@@ -274,6 +339,15 @@
 
   .status-column {
     min-width: 100%;
-    max-height: 400px;
+    max-height: 500px;
+  }
+
+  .kanban-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .add-task-btn {
+    width: 100%;
   }
 }
