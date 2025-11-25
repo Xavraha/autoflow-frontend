@@ -14,25 +14,34 @@ function JobStatusUpdater({ currentStatus, jobId, onStatusChange }) {
 
   const handleUpdate = async (newStatus) => {
     try {
-      await fetch(`${API_URL}/api/jobs${jobId}/status`, {
+      // FIX: Added missing slash before jobId
+      const response = await fetch(`${API_URL}/api/jobs/${jobId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus }),
       });
+
+      if (!response.ok) {
+        throw new Error('Error en la respuesta del servidor');
+      }
+
       setStatus(newStatus);
       onStatusChange(newStatus); // Avisa al padre del cambio
       alert('¡Estado actualizado!');
     } catch (error) {
       console.error('Error al actualizar el estado:', error);
+      alert('Hubo un error al actualizar el estado. Inténtalo de nuevo.');
+      // Revertir el estado visual si falló
+      setStatus(currentStatus);
     }
   };
 
   return (
     <div style={{ margin: '20px 0' }}>
       <label htmlFor="status-select" style={{ marginRight: '10px' }}>Estado del Trabajo:</label>
-      <select 
+      <select
         id="status-select"
-        value={status} 
+        value={status}
         onChange={(e) => handleUpdate(e.target.value)}
       >
         {Object.entries(STATUSES).map(([key, value]) => (
