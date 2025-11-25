@@ -1,11 +1,11 @@
-// src/Dashboard.jsx
+// src/KanbanBoard.jsx
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaCar, FaExclamationTriangle, FaChartLine } from 'react-icons/fa';
-import './Dashboard.css';
+import './KanbanBoard.css';
 import JobCard from './components/JobCard';
 
-// Definimos las columnas, incluyendo la nueva
+// Definimos las columnas
 const STATUSES = {
   pending_diagnosis: "DIAGNÓSTICO PENDIENTE",
   awaiting_parts: "EN ESPERA DE PIEZAS",
@@ -22,7 +22,7 @@ const STATUS_COLORS = {
   canceled: "#6c757d"
 };
 
-function Dashboard({ jobs, customers }) {
+function KanbanBoard({ jobs, customers }) {
   const navigate = useNavigate();
   const [stats, setStats] = useState({
     vehiclesInShop: 0,
@@ -61,7 +61,7 @@ function Dashboard({ jobs, customers }) {
         <div className="stat-card vehicles">
           <FaCar className="stat-icon" />
           <div className="stat-content">
-            <span className="stat-label">VEHÍCULOS EN TALLER:</span>
+            <span className="stat-label">VENÍCULO EN TALLER:</span>
             <span className="stat-value">{stats.vehiclesInShop}</span>
           </div>
         </div>
@@ -98,7 +98,6 @@ function Dashboard({ jobs, customers }) {
               <span className="task-count">{(jobsByStatus[statusKey] || []).length} TAREAS</span>
             </div>
             <div className="job-cards-container">
-              {/* Mostramos las tarjetas que corresponden a esta columna */}
               {(jobsByStatus[statusKey] || []).map(job => {
                 const customer = customers.find(c => c._id === job.customerId);
                 return <JobCard key={job._id} job={job} customer={customer} />;
@@ -112,4 +111,4 @@ function Dashboard({ jobs, customers }) {
   );
 }
 
-export default Dashboard;
+export default KanbanBoard;
