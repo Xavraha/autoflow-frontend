@@ -1,0 +1,131 @@
+/* src/components/Sidebar.css */
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    background-color: #0a0b10;
+    border-right: 2px solid #00f3ff;
+    /* Cyan neon border */
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+}
+
+.logo-container {
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.neon-logo {
+    font-family: 'Orbitron', sans-serif;
+    /* Tech font */
+    font-size: 2em;
+    color: #00f3ff;
+    text-shadow: 0 0 10px rgba(0, 243, 255, 0.8);
+    margin: 0;
+}
+
+.flow-text {
+    color: #ff00ff;
+    text-shadow: 0 0 10px rgba(255, 0, 255, 0.8);
+}
+
+.nav-menu {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    color: #888;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+
+.nav-icon {
+    margin-right: 15px;
+    font-size: 1.2em;
+}
+
+.nav-item:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+/* Active State - The "Glow" */
+.nav-item.active {
+    background: linear-gradient(90deg, rgba(255, 0, 255, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
+    border-left: 4px solid #ff00ff;
+    color: #fff;
+    box-shadow: -5px 0 15px rgba(255, 0, 255, 0.3);
+}
+
+/* Specific colors for specific items if needed */
+.nav-item:nth-child(1).active {
+    border-color: #00f3ff;
+    background: linear-gradient(90deg, rgba(0, 243, 255, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
+    box-shadow: -5px 0 15px rgba(0, 243, 255, 0.3);
+}
+
+.nav-item:nth-child(2).active {
+    border-color: #d900ff;
+    background: linear-gradient(90deg, rgba(217, 0, 255, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
+    box-shadow: -5px 0 15px rgba(217, 0, 255, 0.3);
+}
+
+.nav-item:nth-child(3).active {
+    border-color: #00ff00;
+    background: linear-gradient(90deg, rgba(0, 255, 0, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
+    box-shadow: -5px 0 15px rgba(0, 255, 0, 0.3);
+}
+
+/* New Task Green */
+.nav-item:nth-child(4).active {
+    border-color: #0088ff;
+    background: linear-gradient(90deg, rgba(0, 136, 255, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
+    box-shadow: -5px 0 15px rgba(0, 136, 255, 0.3);
+}
+
+.nav-item:nth-child(5).active {
+    border-color: #ff0055;
+    background: linear-gradient(90deg, rgba(255, 0, 85, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
+    box-shadow: -5px 0 15px rgba(255, 0, 85, 0.3);
+}
+
+
+.user-profile {
+    margin-top: auto;
+    display: flex;
+    justify-content: center;
+    padding-top: 20px;
+    border-top: 1px solid #333;
+}
+
+.avatar-glow {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    padding: 2px;
+    background: linear-gradient(45deg, #00f3ff, #ff00ff);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+}
+
+.avatar-glow img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 2px solid #000;
+}

@@ -1,36 +1,36 @@
 // src/App.jsx
 
-import { API_URL } from './apiConfig'; 
+import { API_URL } from './apiConfig';
 import { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import './App.css';
-import Dashboard from './Dashboard';
+
+// Layout & Components
+import Layout from './components/Layout';
+import Dashboard from './Dashboard'; // New Dashboard (Stats)
+import KanbanBoard from './KanbanBoard'; // Old Dashboard (Tasks)
 import JobDetailPage from './JobDetailPage';
 import AddCustomerForm from './components/AddCustomerForm';
 import AddJobForm from './components/AddJobForm';
 
-// --- COMPONENTE PARA LA PÁGINA PRINCIPAL ---
-// Muestra el tablero y los formularios de creación.
-function MainPage({ jobs, customers, fetchAllData }) {
-  return (
-    <div className="App">
-      <h1>AutoFlow</h1>
-      <Dashboard jobs={jobs} customers={customers} />
-      <hr />
-      <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-        <div style={{ flex: 1, minWidth: '300px' }}>
-          <AddCustomerForm onCustomerAdded={fetchAllData} />
-        </div>
-        <div style={{ flex: 2, minWidth: '400px' }}>
-          <AddJobForm customers={customers} onJobAdded={fetchAllData} />
-        </div>
+// Placeholder components for new routes (will be implemented in next phases)
+const ClientsPage = () => <div><h2>Clientes (En construcción)</h2></div>;
+const TechniciansPage = () => <div><h2>Técnicos (En construcción)</h2></div>;
+const NewTaskPage = ({ customers, fetchAllData }) => (
+  <div style={{ padding: '20px' }}>
+    <h2>Nueva Tarea</h2>
+    <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+      <div style={{ flex: 1, minWidth: '300px' }}>
+        <AddCustomerForm onCustomerAdded={fetchAllData} />
+      </div>
+      <div style={{ flex: 2, minWidth: '400px' }}>
+        <AddJobForm customers={customers} onJobAdded={fetchAllData} />
       </div>
     </div>
-  );
-}
+  </div>
+);
 
-// --- COMPONENTE PRINCIPAL DE LA APP ---
-// Se encarga de obtener los datos y definir las rutas.
+
 function App() {
   // --- ESTADOS ---
   const [jobs, setJobs] = useState([]);
@@ -59,18 +59,27 @@ function App() {
 
   // --- DEFINICIÓN DE RUTAS ---
   return (
-    <Routes>
-      {/* Ruta para la página principal */}
-      <Route 
-        path="/" 
-        element={<MainPage jobs={jobs} customers={customers} fetchAllData={fetchAllData} />} 
-      />
-      {/* Ruta para la página de detalles de un trabajo específico */}
-      <Route 
-        path="/job/:jobId" 
-        element={<JobDetailPage />} 
-      />
-    </Routes>
+    <Layout>
+      <Routes>
+        {/* Dashboard Principal (Stats) */}
+        <Route path="/" element={<Dashboard />} />
+
+        {/* Clientes */}
+        <Route path="/clients" element={<ClientsPage />} />
+
+        {/* Nueva Tarea (Formularios) */}
+        <Route path="/new-task" element={<NewTaskPage customers={customers} fetchAllData={fetchAllData} />} />
+
+        {/* Tareas (Kanban) */}
+        <Route path="/tasks" element={<KanbanBoard jobs={jobs} customers={customers} />} />
+
+        {/* Técnicos */}
+        <Route path="/technicians" element={<TechniciansPage />} />
+
+        {/* Detalle de Trabajo */}
+        <Route path="/job/:jobId" element={<JobDetailPage />} />
+      </Routes>
+    </Layout>
   );
 }
 
