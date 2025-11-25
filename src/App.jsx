@@ -14,6 +14,11 @@ import AddCustomerForm from './components/AddCustomerForm';
 import AddJobForm from './components/AddJobForm';
 import ClientList from './pages/ClientList';
 import ClientForm from './pages/ClientForm';
+import TechnicianList from './pages/TechnicianList';
+import TechnicianForm from './pages/TechnicianForm';
+import TechnicianProfile from './pages/TechnicianProfile';
+import NewTask from './pages/NewTask';
+import TaskDetail from './pages/TaskDetail';
 
 // Placeholder components for new routes (will be implemented in next phases)
 const TechniciansPage = () => <div><h2>Técnicos (En construcción)</h2></div>;
@@ -74,9 +79,14 @@ function App() {
 
         {/* Tareas (Kanban) */}
         <Route path="/tasks" element={<KanbanBoard jobs={jobs} customers={customers} />} />
+        <Route path="/tasks/new" element={<NewTask />} />
+        <Route path="/tasks/:id" element={<TaskDetail />} />
 
         {/* Técnicos */}
-        <Route path="/technicians" element={<TechniciansPage />} />
+        <Route path="/technicians" element={<TechnicianList />} />
+        <Route path="/technicians/new" element={<TechnicianForm />} />
+        <Route path="/technicians/edit/:id" element={<TechnicianForm />} />
+        <Route path="/technicians/:id" element={<TechnicianProfile />} />
 
         {/* Detalle de Trabajo */}
         <Route path="/job/:jobId" element={<JobDetailPage />} />
