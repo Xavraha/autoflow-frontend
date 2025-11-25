@@ -6,7 +6,8 @@ const STATUSES = {
   pending_diagnosis: "Diagnóstico Pendiente",
   awaiting_parts: "En Espera de Piezas",
   in_progress: "En Progreso",
-  completed: "Completado"
+  completed: "Completado",
+  canceled: "Cancelado"
 };
 
 function JobStatusUpdater({ currentStatus, jobId, onStatusChange }) {
