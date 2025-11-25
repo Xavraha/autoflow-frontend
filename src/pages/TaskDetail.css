@@ -1,287 +1,517 @@
-.taskdetail-container {
-    padding: 2rem;
-    max-width: 1400px;
-    margin: 0 auto;
-    color: #e0e0e0;
+/* TaskDetail - Cyberpunk Design */
+
+.task-detail-view {
+    min-height: 100vh;
+    padding: 1.5rem;
+    color: #fff;
 }
 
-.taskdetail-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+/* Header */
+.detail-header {
     margin-bottom: 2rem;
-    border-bottom: 2px solid rgba(0, 243, 255, 0.3);
-    padding-bottom: 1rem;
 }
 
-.taskdetail-header h1 {
+.back-btn {
+    background: transparent;
+    border: 2px solid #00f3ff;
+    color: #00f3ff;
+    padding: 0.8rem 2rem;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    transition: all 0.3s ease;
+    border-radius: 6px;
+}
+
+.back-btn:hover {
+    background: #00f3ff;
+    color: #000;
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.6);
+}
+
+/* Layout */
+.detail-layout {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 2rem;
+}
+
+/* Left Panel */
+.left-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.vehicle-header h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.5rem;
+    color: #fff;
+    margin: 0;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid rgba(0, 243, 255, 0.3);
+}
+
+/* Status List */
+.status-list-section {
+    background: linear-gradient(135deg, rgba(10, 10, 20, 0.9), rgba(20, 20, 35, 0.9));
+    border: 2px solid rgba(0, 243, 255, 0.3);
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.status-list-section h3 {
     font-family: 'Orbitron', sans-serif;
     color: #00f3ff;
-    text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
-    font-size: 2rem;
-    margin: 0;
+    margin: 0 0 1rem 0;
+    font-size: 0.9rem;
+}
+
+.status-badges {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
 }
 
 .status-badge {
-    padding: 0.5rem 1.5rem;
+    background: rgba(30, 30, 40, 0.8);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.7);
+    padding: 0.6rem 1.2rem;
     border-radius: 20px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.75rem;
     font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
     text-transform: uppercase;
-    font-size: 0.85rem;
-    letter-spacing: 1px;
 }
 
-.status-badge.pending_diagnosis {
-    background: rgba(240, 173, 78, 0.2);
-    border: 1px solid #f0ad4e;
-    color: #f0ad4e;
+.status-badge:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.4);
 }
 
-.status-badge.awaiting_parts {
-    background: rgba(217, 83, 79, 0.2);
-    border: 1px solid #d9534f;
-    color: #d9534f;
+.status-badge.active {
+    background: linear-gradient(135deg, #00f3ff, #0066ff);
+    border-color: #00f3ff;
+    color: #fff;
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.6);
 }
 
-.status-badge.in_progress {
-    background: rgba(0, 123, 255, 0.2);
-    border: 1px solid #007bff;
-    color: #007bff;
+/* Section 2 - Vehicle Showcase */
+.section-2 {
+    background: linear-gradient(135deg, rgba(10, 10, 20, 0.9), rgba(20, 20, 35, 0.9));
+    border: 2px solid #d900ff;
+    border-radius: 12px;
+    padding: 1.5rem;
 }
 
-.status-badge.completed {
-    background: rgba(92, 184, 92, 0.2);
-    border: 1px solid #5cb85c;
-    color: #5cb85c;
+.section-2 h3 {
+    font-family: 'Orbitron', sans-serif;
+    color: #d900ff;
+    margin: 0 0 1rem 0;
+    font-size: 0.9rem;
 }
 
-.status-badge.canceled {
-    background: rgba(108, 117, 125, 0.2);
-    border: 1px solid #6c757d;
-    color: #6c757d;
+.vehicle-showcase {
+    position: relative;
 }
 
-.taskdetail-content {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 2rem;
-}
-
-.main-section {
+.vehicle-stats {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
 }
 
-.info-card {
-    background: rgba(20, 20, 30, 0.6);
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+}
+
+.stat-label {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.stat-value {
+    color: #00f3ff;
+    font-weight: bold;
+}
+
+.vehicle-visual {
+    width: 100%;
+    height: 250px;
+    background: linear-gradient(135deg, rgba(0, 243, 255, 0.05), rgba(217, 0, 255, 0.05));
     border: 1px solid rgba(0, 243, 255, 0.3);
     border-radius: 8px;
-    padding: 2rem;
-}
-
-.info-card h2 {
-    color: #ff00ff;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.3rem;
-    margin-bottom: 1.5rem;
-    border-bottom: 1px solid rgba(255, 0, 255, 0.3);
-    padding-bottom: 0.5rem;
     display: flex;
     align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.vehicle-placeholder {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 3rem;
+    color: rgba(0, 243, 255, 0.2);
+    font-weight: bold;
+}
+
+/* Progress Timeline */
+.progress-timeline {
+    background: linear-gradient(135deg, rgba(10, 10, 20, 0.9), rgba(20, 20, 35, 0.9));
+    border: 2px solid rgba(0, 243, 255, 0.3);
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.progress-timeline h3 {
+    font-family: 'Orbitron', sans-serif;
+    color: #00f3ff;
+    margin: 0 0 1.5rem 0;
+    font-size: 0.9rem;
+}
+
+.timeline-steps {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.timeline-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     gap: 0.5rem;
+    position: relative;
+    flex: 1;
+}
+
+.step-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+.step-icon.completed {
+    background: linear-gradient(135deg, #5cb85c, #4caf50);
+    border: 3px solid #5cb85c;
+    color: #fff;
+    box-shadow: 0 0 20px rgba(92, 184, 92, 0.6);
+}
+
+.step-icon.active {
+    background: linear-gradient(135deg, #00f3ff, #0066ff);
+    border: 3px solid #00f3ff;
+    box-shadow: 0 0 30px rgba(0, 243, 255, 0.8);
+    animation: pulse 2s infinite;
+}
+
+.pulse-ring {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #fff;
+    animation: rotate 2s linear infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px rgba(0, 243, 255, 0.8);
+    }
+
+    50% {
+        box-shadow: 0 0 40px rgba(0, 243, 255, 1);
+    }
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.step-icon.pending {
+    background: rgba(40, 40, 50, 0.5);
+    border: 3px solid rgba(255, 255, 255, 0.2);
+}
+
+.pending-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.step-connector {
+    position: absolute;
+    top: 25px;
+    left: 50%;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, currentColor 50%, rgba(255, 255, 255, 0.2) 50%);
+    z-index: 1;
+}
+
+.step-label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+    font-weight: bold;
+}
+
+.completion-percent {
+    font-size: 0.65rem;
+    color: #00f3ff;
+    margin-top: 0.3rem;
+}
+
+/* Vehicle Info Grid */
+.vehicle-info-grid {
+    background: linear-gradient(135deg, rgba(10, 10, 20, 0.9), rgba(20, 20, 35, 0.9));
+    border: 2px solid rgba(0, 243, 255, 0.3);
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.vehicle-info-grid h3 {
+    font-family: 'Orbitron', sans-serif;
+    color: #00f3ff;
+    margin: 0 0 1rem 0;
+    font-size: 0.9rem;
 }
 
 .info-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
 }
 
 .info-item {
-    background: rgba(0, 243, 255, 0.05);
-    border: 1px solid rgba(0, 243, 255, 0.2);
-    padding: 1rem;
-    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
 }
 
-.info-item label {
-    display: block;
-    color: #999;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    margin-bottom: 0.3rem;
-}
-
-.info-item .value {
-    color: #00f3ff;
-    font-size: 1.1rem;
+.info-label {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.5);
     font-weight: bold;
 }
 
-.task-steps {
-    margin-top: 1.5rem;
+.info-value {
+    font-size: 0.9rem;
+    color: #fff;
+    font-family: 'Orbitron', sans-serif;
 }
 
-.step-item {
-    background: rgba(0, 0, 0, 0.3);
-    border-left: 3px solid #ff00ff;
-    padding: 1rem;
-    margin-bottom: 1rem;
+/* Right Panel - Action Console */
+.action-console {
+    background: linear-gradient(135deg, rgba(10, 10, 20, 0.95), rgba(20, 20, 35, 0.95));
+    border: 2px solid #d900ff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    max-height: calc(100vh - 150px);
+    overflow-y: auto;
+}
+
+.action-console h2 {
+    font-family: 'Orbitron', sans-serif;
+    color: #d900ff;
+    margin: 0 0 1.5rem 0;
+    font-size: 1.2rem;
+    text-shadow: 0 0 10px rgba(217, 0, 255, 0.6);
+}
+
+.steps-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.action-step {
+    background: rgba(30, 30, 40, 0.6);
+    border: 1px solid rgba(217, 0, 255, 0.3);
+    border-radius: 8px;
+    padding: 1.2rem;
+}
+
+.step-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+}
+
+.step-header h3 {
+    font-family: 'Orbitron', sans-serif;
+    color: #d900ff;
+    margin: 0;
+    font-size: 0.8rem;
+}
+
+.delete-step-btn {
+    background: rgba(255, 0, 85, 0.1);
+    border: 1px solid #ff0055;
+    color: #ff0055;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.7rem;
     border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: 'Orbitron', sans-serif;
     transition: all 0.3s ease;
 }
 
-.step-item:hover {
-    background: rgba(0, 243, 255, 0.05);
-    border-left-color: #00f3ff;
+.delete-step-btn:hover {
+    background: #ff0055;
+    color: #fff;
+    box-shadow: 0 0 15px rgba(255, 0, 85, 0.6);
 }
 
-.step-description {
-    color: #e0e0e0;
-    margin-bottom: 0.5rem;
+.action-step h4 {
+    color: #fff;
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
 }
 
-.step-photos {
+.media-gallery h5,
+.step-comment h5 {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0 0 0.8rem 0;
+    font-weight: bold;
+}
+
+.gallery-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-top: 1rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
 }
 
-.step-photo {
+.gallery-item {
     position: relative;
-    border: 1px solid rgba(0, 243, 255, 0.3);
-    border-radius: 4px;
+    aspect-ratio: 16/9;
+    border-radius: 6px;
     overflow: hidden;
+    border: 1px solid rgba(0, 243, 255, 0.3);
 }
 
-.step-photo img {
+.gallery-item img {
     width: 100%;
-    height: 150px;
+    height: 100%;
     object-fit: cover;
 }
 
 .photo-label {
     position: absolute;
-    top: 0;
+    bottom: 0;
     left: 0;
-    background: rgba(0, 243, 255, 0.8);
-    color: #000;
-    padding: 0.3rem 0.8rem;
-    font-size: 0.75rem;
-    font-weight: bold;
+    right: 0;
+    background: rgba(0, 0, 0, 0.8);
+    color: #00f3ff;
+    padding: 0.4rem;
+    font-size: 0.7rem;
+    text-align: center;
 }
 
-.sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-}
-
-.action-panel {
-    background: rgba(20, 20, 30, 0.6);
-    border: 1px solid rgba(255, 0, 255, 0.3);
-    border-radius: 8px;
-    padding: 1.5rem;
-}
-
-.action-panel h3 {
-    color: #ff00ff;
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-}
-
-.action-btn {
-    width: 100%;
-    padding: 0.8rem;
-    margin-bottom: 0.8rem;
-    border: none;
-    border-radius: 4px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, #00f3ff, #0066ff);
-    color: #fff;
-}
-
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 243, 255, 0.4);
-}
-
-.btn-secondary {
-    background: rgba(255, 0, 255, 0.2);
-    border: 1px solid #ff00ff;
-    color: #ff00ff;
-}
-
-.btn-secondary:hover {
-    background: rgba(255, 0, 255, 0.3);
-    box-shadow: 0 0 10px rgba(255, 0, 255, 0.3);
-}
-
-.btn-danger {
-    background: rgba(255, 0, 85, 0.2);
-    border: 1px solid #ff0055;
-    color: #ff0055;
-}
-
-.btn-danger:hover {
-    background: rgba(255, 0, 85, 0.3);
-    box-shadow: 0 0 10px rgba(255, 0, 85, 0.3);
-}
-
-.status-changer {
+.step-comment {
     margin-top: 1rem;
 }
 
-.status-changer label {
-    display: block;
-    color: #00f3ff;
-    font-size: 0.85rem;
-    margin-bottom: 0.5rem;
-    text-transform: uppercase;
-}
-
-.status-changer select {
-    width: 100%;
+.step-comment p {
+    background: rgba(0, 0, 0, 0.3);
+    border-left: 3px solid #00f3ff;
     padding: 0.8rem;
-    background: rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(0, 243, 255, 0.4);
-    border-radius: 4px;
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.add-step-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #d900ff, #ff00ff);
+    border: 2px solid #d900ff;
     color: #fff;
+    padding: 1rem;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 8px;
     cursor: pointer;
-}
-
-.loading-screen {
     display: flex;
-    justify-content: center;
     align-items: center;
-    height: 60vh;
-    font-size: 1.5rem;
-    color: #00f3ff;
-    text-transform: uppercase;
-    letter-spacing: 2px;
+    justify-content: center;
+    gap: 0.8rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(217, 0, 255, 0.4);
 }
 
-@media (max-width: 968px) {
-    .taskdetail-content {
+.add-step-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 30px rgba(217, 0, 255, 0.7);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .detail-layout {
         grid-template-columns: 1fr;
+    }
+
+    .action-console {
+        max-height: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .status-badges {
+        flex-direction: column;
+    }
+
+    .status-badge {
+        width: 100%;
+        text-align: center;
+    }
+
+    .timeline-steps {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .step-connector {
+        display: none;
     }
 
     .info-grid {
         grid-template-columns: 1fr;
     }
 
-    .step-photos {
+    .gallery-grid {
         grid-template-columns: 1fr;
     }
 }

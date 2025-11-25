@@ -1,9 +1,19 @@
-import React, { useState, useEffect } from 'react';
+// src/pages/TaskDetail.jsx
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaCar, FaUser, FaTasks, FaEdit, FaArrowLeft, FaCog } from 'react-icons/fa';
+import { FaArrowLeft, FaPlus, FaTrash, FaCheckCircle } from 'react-icons/fa';
+import { API_URL } from '../apiConfig';
 import './TaskDetail.css';
 
-const TaskDetail = () => {
+const STATUS_LABELS = {
+    pending_diagnosis: "DIAGNÓSTICO PENDIENTE",
+    awaiting_parts: "EN ESPERA DE PIEZAS",
+    in_progress: "EN PROGRESO",
+    completed: "COMPLETADO",
+    canceled: "CANCELADO"
+};
+
+function TaskDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
     const [job, setJob] = useState(null);
@@ -11,32 +21,23 @@ const TaskDetail = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetchJobDetail();
+        fetchJobDetails();
     }, [id]);
 
-    const fetchJobDetail = async () => {
+    const fetchJobDetails = async () => {
         try {
-            // Fetch job
-            const jobResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/jobs/${id}`);
-            if (jobResponse.ok) {
-                const jobData = await jobResponse.json();
-                setJob(jobData);
+            const jobResponse = await fetch(`${API_URL}/api/jobs/${id}`);
+            const jobData = await jobResponse.json();
+            setJob(jobData);
 
-                // Fetch customer
-                if (jobData.customerId) {
-                    const customersResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/customers`);
-                    if (customersResponse.ok) {
-                        const customers = await customersResponse.json();
-                        const customerData = customers.find(c => c._id === jobData.customerId);
-                        setCustomer(customerData);
-                    }
-                }
-            } else {
-                alert('Job not found');
-                navigate('/tasks');
+            if (jobData.customerId) {
+                const customerResponse = await fetch(`${API_URL}/api/customers`);
+                const customers = await customerResponse.json();
+                const foundCustomer = customers.find(c => c._id === jobData.customerId);
+                setCustomer(foundCustomer);
             }
         } catch (error) {
-            console.error('Error fetching job:', error);
+            console.error('Error fetching job details:', error);
         } finally {
             setLoading(false);
         }
@@ -44,203 +45,233 @@ const TaskDetail = () => {
 
     const handleStatusChange = async (newStatus) => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/jobs/${id}/status`, {
-                method: 'PATCH',
+            await fetch(`${API_URL}/api/jobs/${id}`, {
+                method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: newStatus })
+                body: JSON.stringify({ ...job, status: newStatus })
             });
-
-            if (response.ok) {
-                setJob(prev => ({ ...prev, status: newStatus }));
-            }
+            setJob({ ...job, status: newStatus });
         } catch (error) {
             console.error('Error updating status:', error);
         }
     };
 
-    if (loading) {
-        return <div className="loading-screen">ACCESSING MISSION DATA...</div>;
-    }
+    const handleDeleteStep = async (stepIndex) => {
+        if (!window.confirm('¿Eliminar este paso?')) return;
 
-    if (!job) {
-        return <div className="loading-screen">MISSION NOT FOUND</div>;
-    }
+        const updatedSteps = job.taskSteps.filter((_, i) => i !== stepIndex);
+        try {
+            await fetch(`${API_URL}/api/jobs/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...job, taskSteps: updatedSteps })
+            });
+            setJob({ ...job, taskSteps: updatedSteps });
+        } catch (error) {
+            console.error('Error deleting step:', error);
+        }
+    };
+
+    if (loading) return <div className="loading">Cargando...</div>;
+    if (!job) return <div className="error">Trabajo no encontrado</div>;
+
+    const progressSteps = [
+        { label: 'RECEPCIÓN', status: 'completed' },
+        { label: 'DIAGNÓSTICO', status: job.status === 'pending_diagnosis' ? 'active' : 'completed' },
+        { label: 'REPARACIÓN', status: job.status === 'in_progress' ? 'active' : job.status === 'completed' ? 'completed' : 'pending' },
+        { label: 'CONTROL CALIDAD', status: job.status === 'completed' ? 'completed' : 'pending' }
+    ];
 
     return (
-        <div className="taskdetail-container">
-            <div className="taskdetail-header">
-                <div>
-                    <button
-                        onClick={() => navigate('/tasks')}
-                        className="back-btn"
-                        style={{
-                            marginBottom: '0.5rem',
-                            padding: '0.5rem 1rem',
-                            background: 'rgba(0,0,0,0.5)',
-                            border: '1px solid #00f3ff',
-                            color: '#00f3ff',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.5rem'
-                        }}
-                    >
-                        <FaArrowLeft /> BACK TO MISSIONS
-                    </button>
-                    <h1>MISSION BRIEF</h1>
-                </div>
-                <span className={`status-badge ${job.status}`}>
-                    {job.status.replace(/_/g, ' ')}
-                </span>
+        <div className="task-detail-view">
+            {/* Header con Back */}
+            <div className="detail-header">
+                <button className="back-btn" onClick={() => navigate(-1)}>
+                    <FaArrowLeft /> BACK
+                </button>
             </div>
 
-            <div className="taskdetail-content">
-                {/* Main Content */}
-                <div className="main-section">
-                    {/* Vehicle Info */}
-                    <div className="info-card">
-                        <h2><FaCar /> VEHICLE DATA</h2>
-                        <div className="info-grid">
-                            <div className="info-item">
-                                <label>Make</label>
-                                <div className="value">{job.vehicleInfo?.make || 'N/A'}</div>
+            <div className="detail-layout">
+                {/* Left Panel - Vehicle Status */}
+                <div className="left-panel">
+                    {/* Vehicle Header */}
+                    <div className="vehicle-header">
+                        <h2>ESTADO DEL VEHÍCULO</h2>
+                    </div>
+
+                    {/* Status List */}
+                    <div className="status-list-section">
+                        <h3>STATUS LIST</h3>
+                        <div className="status-badges">
+                            <button
+                                className={`status-badge ${job.status === 'pending_diagnosis' ? 'active' : ''}`}
+                                onClick={() => handleStatusChange('pending_diagnosis')}
+                            >
+                                DIAGNÓSTICO PENDIENTE
+                            </button>
+                            <button
+                                className={`status-badge ${job.status === 'awaiting_parts' ? 'active' : ''}`}
+                                onClick={() => handleStatusChange('awaiting_parts')}
+                            >
+                                EN ESPERA DE PIEZAS
+                            </button>
+                            <button
+                                className={`status-badge ${job.status === 'in_progress' ? 'active' : ''}`}
+                                onClick={() => handleStatusChange('in_progress')}
+                            >
+                                EN PROGRESO
+                            </button>
+                            <button
+                                className={`status-badge ${job.status === 'completed' ? 'active' : ''}`}
+                                onClick={() => handleStatusChange('completed')}
+                            >
+                                COMPLETADO
+                            </button>
+                            <button
+                                className={`status-badge ${job.status === 'canceled' ? 'active' : ''}`}
+                                onClick={() => handleStatusChange('canceled')}
+                            >
+                                CANCELADO
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Section 2 - Vehicle Image */}
+                    <div className="section-2">
+                        <h3>SECTION 2</h3>
+                        <div className="vehicle-showcase">
+                            <div className="vehicle-stats">
+                                <div className="stat-item">
+                                    <span className="stat-label">Battery Level:</span>
+                                    <span className="stat-value">75%</span>
+                                </div>
+                                <div className="stat-item">
+                                    <span className="stat-label">Engine Status:</span>
+                                    <span className="stat-value">210 bar</span>
+                                </div>
+                                <div className="stat-item">
+                                    <span className="stat-label">Hydraulic Status:</span>
+                                    <span className="stat-value">Normal</span>
+                                </div>
                             </div>
-                            <div className="info-item">
-                                <label>Model</label>
-                                <div className="value">{job.vehicleInfo?.model || 'N/A'}</div>
-                            </div>
-                            <div className="info-item">
-                                <label>Year</label>
-                                <div className="value">{job.vehicleInfo?.year || 'N/A'}</div>
-                            </div>
-                            <div className="info-item">
-                                <label>Fuel Type</label>
-                                <div className="value">{job.vehicleInfo?.fuelType || 'N/A'}</div>
+                            <div className="vehicle-visual">
+                                {/* Placeholder for vehicle image */}
+                                <div className="vehicle-placeholder">
+                                    <span>CYBERTRUCK</span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Customer Info */}
-                    {customer && (
-                        <div className="info-card">
-                            <h2><FaUser /> CLIENT DATA</h2>
-                            <div className="info-grid">
-                                <div className="info-item">
-                                    <label>Name</label>
-                                    <div className="value">{customer.name}</div>
-                                </div>
-                                <div className="info-item">
-                                    <label>Phone</label>
-                                    <div className="value">{customer.phone}</div>
-                                </div>
-                                {customer.email && (
-                                    <div className="info-item">
-                                        <label>Email</label>
-                                        <div className="value">{customer.email}</div>
+                    {/* Progress Timeline */}
+                    <div className="progress-timeline">
+                        <h3>PROGRESS TIMELINE</h3>
+                        <div className="timeline-steps">
+                            {progressSteps.map((step, index) => (
+                                <div key={index} className="timeline-step">
+                                    <div className={`step-icon ${step.status}`}>
+                                        {step.status === 'completed' && <FaCheckCircle />}
+                                        {step.status === 'active' && <div className="pulse-ring"></div>}
+                                        {step.status === 'pending' && <div className="pending-circle"></div>}
                                     </div>
-                                )}
+                                    <div className="step-label">{step.label}</div>
+                                    {step.status === 'active' && <div className="completion-percent">65% COMPLETE</div>}
+                                    {index < progressSteps.length - 1 && <div className="step-connector"></div>}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Vehicle Information */}
+                    <div className="vehicle-info-grid">
+                        <h3>INFORMACIÓN DEL VEHÍCULO</h3>
+                        <div className="info-grid">
+                            <div className="info-item">
+                                <span className="info-label">MARCA:</span>
+                                <span className="info-value">{job.vehicleData?.make || 'N/A'}</span>
+                            </div>
+                            <div className="info-item">
+                                <span className="info-label">VIN:</span>
+                                <span className="info-value">{job.vehicleData?.vin || 'N/A'}</span>
+                            </div>
+                            <div className="info-item">
+                                <span className="info-label">BODY:</span>
+                                <span className="info-value">{job.vehicleData?.bodyClass || 'N/A'}</span>
+                            </div>
+                            <div className="info-item">
+                                <span className="info-label">MODELO:</span>
+                                <span className="info-value">{job.vehicleData?.model || 'N/A'}</span>
+                            </div>
+                            <div className="info-item">
+                                <span className="info-label">TRIM:</span>
+                                <span className="info-value">{job.vehicleData?.trim || 'N/A'}</span>
+                            </div>
+                            <div className="info-item">
+                                <span className="info-label">CYL:</span>
+                                <span className="info-value">N/A</span>
+                            </div>
+                            <div className="info-item">
+                                <span className="info-label">AÑO:</span>
+                                <span className="info-value">{job.vehicleData?.year || 'N/A'}</span>
+                            </div>
+                            <div className="info-item">
+                                <span className="info-label">BODY:</span>
+                                <span className="info-value">{job.vehicleData?.bodyClass || 'N/A'}</span>
+                            </div>
+                            <div className="info-item">
+                                <span className="info-label">FUEL:</span>
+                                <span className="info-value">Electric</span>
                             </div>
                         </div>
-                    )}
+                    </div>
+                </div>
 
-                    {/* Tasks/Steps */}
-                    <div className="info-card">
-                        <h2><FaTasks /> MISSION TASKS</h2>
-                        {job.tasks && job.tasks.length > 0 ? (
-                            job.tasks.map((task, index) => (
-                                <div key={task._id || index} style={{ marginBottom: '2rem' }}>
-                                    <h3 style={{ color: '#00f3ff', marginBottom: '1rem' }}>{task.title}</h3>
-                                    {task.description && (
-                                        <p style={{ color: '#aaa', marginBottom: '1rem' }}>{task.description}</p>
-                                    )}
-                                    {task.technician && (
-                                        <p style={{ color: '#ff00ff', marginBottom: '1rem' }}>
-                                            Assigned: {task.technician}
-                                        </p>
-                                    )}
+                {/* Right Panel - Action Console */}
+                <div className="action-console">
+                    <h2>CONSOLA DE ACCIÓN</h2>
 
-                                    {task.steps && task.steps.length > 0 && (
-                                        <div className="task-steps">
-                                            <h4 style={{ color: '#999', fontSize: '0.9rem', marginBottom: '1rem' }}>
-                                                STEPS COMPLETED
-                                            </h4>
-                                            {task.steps.map((step, stepIndex) => (
-                                                <div key={step._id || stepIndex} className="step-item">
-                                                    <div className="step-description">{step.description}</div>
-                                                    {(step.photo_before || step.photo_after) && (
-                                                        <div className="step-photos">
-                                                            {step.photo_before && (
-                                                                <div className="step-photo">
-                                                                    <img src={step.photo_before} alt="Before" />
-                                                                    <span className="photo-label">BEFORE</span>
-                                                                </div>
-                                                            )}
-                                                            {step.photo_after && (
-                                                                <div className="step-photo">
-                                                                    <img src={step.photo_after} alt="After" />
-                                                                    <span className="photo-label">AFTER</span>
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    )}
+                    <div className="steps-list">
+                        {job.taskSteps && job.taskSteps.map((step, index) => (
+                            <div key={index} className="action-step">
+                                <div className="step-header">
+                                    <h3>STEP {index + 1}</h3>
+                                    <button className="delete-step-btn" onClick={() => handleDeleteStep(index)}>
+                                        <FaTrash /> DELETE STEP
+                                    </button>
+                                </div>
+                                <h4>{step.name}</h4>
+
+                                {step.photos && step.photos.length > 0 && (
+                                    <div className="media-gallery">
+                                        <h5>MEDIA GALLERY</h5>
+                                        <div className="gallery-grid">
+                                            {step.photos.map((photo, photoIndex) => (
+                                                <div key={photoIndex} className="gallery-item">
+                                                    <img src={photo.url} alt={photo.label} />
+                                                    <span className="photo-label">{photo.label}</span>
                                                 </div>
                                             ))}
                                         </div>
-                                    )}
-                                </div>
-                            ))
-                        ) : (
-                            <p style={{ color: '#666', fontStyle: 'italic' }}>No tasks assigned yet</p>
-                        )}
-                    </div>
-                </div>
+                                    </div>
+                                )}
 
-                {/* Sidebar */}
-                <div className="sidebar">
-                    <div className="action-panel">
-                        <h3>ACTIONS</h3>
-                        <button className="action-btn btn-primary">
-                            <FaEdit /> EDIT MISSION
-                        </button>
-                        <button className="action-btn btn-secondary">
-                            <FaCog /> ADD TASK
-                        </button>
-
-                        <div className="status-changer">
-                            <label>Change Status</label>
-                            <select
-                                value={job.status}
-                                onChange={(e) => handleStatusChange(e.target.value)}
-                            >
-                                <option value="pending_diagnosis">Pending Diagnosis</option>
-                                <option value="awaiting_parts">Awaiting Parts</option>
-                                <option value="in_progress">In Progress</option>
-                                <option value="completed">Completed</option>
-                                <option value="canceled">Canceled</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div className="action-panel">
-                        <h3>MISSION INFO</h3>
-                        <div className="info-item" style={{ marginBottom: '1rem' }}>
-                            <label>Created</label>
-                            <div className="value">
-                                {new Date(job.createdAt).toLocaleDateString()}
+                                {step.comment && (
+                                    <div className="step-comment">
+                                        <h5>TECHNICIAN'S COMMENT:</h5>
+                                        <p>{step.comment}</p>
+                                    </div>
+                                )}
                             </div>
-                        </div>
-                        <div className="info-item">
-                            <label>Mission ID</label>
-                            <div className="value" style={{ fontSize: '0.8rem' }}>
-                                {job._id}
-                            </div>
-                        </div>
+                        ))}
                     </div>
+
+                    <button className="add-step-btn">
+                        <FaPlus /> AÑADIR PASO
+                    </button>
                 </div>
             </div>
         </div>
     );
-};
+}
 
 export default TaskDetail;
