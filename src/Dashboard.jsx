@@ -27,7 +27,7 @@ function Dashboard({ jobs, customers }) {
       <h2>Torre de Control</h2>
       <div className="dashboard-container">
         {Object.keys(STATUSES).map(statusKey => (
-          <div key={statusKey} className="status-column">
+          <div key={statusKey} className={`status-column ${statusKey}`}>
             <h3 className="column-title">{STATUSES[statusKey]}</h3>
             <div className="job-cards-container">
               {/* Mostramos las tarjetas que corresponden a esta columna */}
