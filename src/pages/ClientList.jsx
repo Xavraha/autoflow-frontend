@@ -1,6 +1,6 @@
 // src/pages/ClientList.jsx
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaSearch, FaPlus, FaEdit, FaTrash, FaUser } from 'react-icons/fa';
 import { API_URL } from '../apiConfig';
 import './ClientList.css';
@@ -8,6 +8,7 @@ import './ClientList.css';
 function ClientList() {
     const [clients, setClients] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchClients();
@@ -20,6 +21,25 @@ function ClientList() {
             setClients(data);
         } catch (error) {
             console.error('Error fetching clients:', error);
+        }
+    };
+
+    const handleEdit = (clientId) => {
+        navigate(`/clients/edit/${clientId}`);
+    };
+
+    const handleDelete = async (clientId) => {
+        if (window.confirm('¿Estás seguro de eliminar este cliente?')) {
+            try {
+                const response = await fetch(`${API_URL}/api/customers/${clientId}`, {
+                    method: 'DELETE'
+                });
+                if (response.ok) {
+                    fetchClients(); // Refresh list
+                }
+            } catch (error) {
+                console.error('Error deleting client:', error);
+            }
         }
     };
 
@@ -75,8 +95,18 @@ function ClientList() {
                                 <td><span className="status-badge vip">VIP</span></td>
                                 <td>
                                     <div className="actions">
-                                        <button className="icon-btn edit"><FaEdit /> Edit</button>
-                                        <button className="icon-btn delete"><FaTrash /> Delete</button>
+                                        <button
+                                            className="icon-btn edit"
+                                            onClick={() => handleEdit(client._id)}
+                                        >
+                                            <FaEdit /> Edit
+                                        </button>
+                                        <button
+                                            className="icon-btn delete"
+                                            onClick={() => handleDelete(client._id)}
+                                        >
+                                            <FaTrash /> Delete
+                                        </button>
                                     </div>
                                 </td>
                             </tr>

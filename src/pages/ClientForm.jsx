@@ -1,12 +1,15 @@
 // src/pages/ClientForm.jsx
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { FaUpload, FaUser, FaSave, FaTimes } from 'react-icons/fa';
 import { API_URL } from '../apiConfig';
 import './ClientForm.css';
 
 function ClientForm() {
     const navigate = useNavigate();
+    const { id } = useParams();
+    const isEditMode = !!id;
+
     const [formData, setFormData] = useState({
         name: '',
         idNumber: '',
@@ -16,6 +19,33 @@ function ClientForm() {
         photoUrl: ''
     });
     const [uploading, setUploading] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (isEditMode) {
+            fetchClient();
+        }
+    }, [id]);
+
+    const fetchClient = async () => {
+        try {
+            const response = await fetch(`${API_URL}/api/customers`);
+            const clients = await response.json();
+            const client = clients.find(c => c._id === id);
+            if (client) {
+                setFormData({
+                    name: client.name || '',
+                    idNumber: client.idNumber || '',
+                    phone: client.phone || '',
+                    email: client.email || '',
+                    address: client.address || '',
+                    photoUrl: client.photoUrl || ''
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching client:', error);
+        }
+    };
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -48,28 +78,38 @@ function ClientForm() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+
+        const url = isEditMode
+            ? `${API_URL}/api/customers/${id}`
+            : `${API_URL}/api/customers`;
+
+        const method = isEditMode ? 'PUT' : 'POST';
+
         try {
-            const response = await fetch(`${API_URL}/api/customers`, {
-                method: 'POST',
+            const response = await fetch(url, {
+                method: method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
             });
 
             if (response.ok) {
-                alert('¡Cliente creado exitosamente!');
+                alert(isEditMode ? '¡Cliente actualizado exitosamente!' : '¡Cliente creado exitosamente!');
                 navigate('/clients');
             } else {
-                alert('Error al crear el cliente');
+                alert('Error al guardar el cliente');
             }
         } catch (error) {
             console.error('Error saving client:', error);
             alert('Error de conexión');
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <div className="client-form-view">
-            <h2 className="neon-title">NUEVO REGISTRO DE CLIENTE</h2>
+            <h2 className="neon-title">{isEditMode ? 'EDITAR REGISTRO DE CLIENTE' : 'NUEVO REGISTRO DE CLIENTE'}</h2>
 
             <div className="form-container">
                 <div className="form-header">
@@ -158,8 +198,8 @@ function ClientForm() {
                     </div>
 
                     <div className="form-actions">
-                        <button type="submit" className="action-btn save">
-                            <FaSave /> GUARDAR EN BASE DE DATOS
+                        <button type="submit" className="action-btn save" disabled={loading}>
+                            <FaSave /> {loading ? 'GUARDANDO...' : (isEditMode ? 'ACTUALIZAR CLIENTE' : 'GUARDAR EN BASE DE DATOS')}
                         </button>
                         <button type="button" className="action-btn cancel" onClick={() => navigate('/clients')}>
                             <FaTimes /> CANCELAR

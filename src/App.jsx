@@ -73,9 +73,10 @@ function App() {
         {/* Clientes */}
         <Route path="/clients" element={<ClientList />} />
         <Route path="/clients/new" element={<ClientForm />} />
+        <Route path="/clients/edit/:id" element={<ClientForm />} />
 
-        {/* Nueva Tarea (Formularios) */}
-        <Route path="/new-task" element={<NewTaskPage customers={customers} fetchAllData={fetchAllData} />} />
+        {/* Nueva Tarea - usando el componente correcto */}
+        <Route path="/new-task" element={<NewTask />} />
 
         {/* Tareas (Kanban) */}
         <Route path="/tasks" element={<KanbanBoard jobs={jobs} customers={customers} />} />

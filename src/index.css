@@ -1,6 +1,10 @@
+@import './responsive.css';
+
 body {
   margin: 0;
   font-family: system-ui, sans-serif;
   background-color: #242424;
   color: rgba(255, 255, 255, 0.87);
+  min-width: 320px;
+  /* Prevent extreme mobile squashing */
 }
