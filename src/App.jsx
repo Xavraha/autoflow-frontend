@@ -12,9 +12,10 @@ import KanbanBoard from './KanbanBoard'; // Old Dashboard (Tasks)
 import JobDetailPage from './JobDetailPage';
 import AddCustomerForm from './components/AddCustomerForm';
 import AddJobForm from './components/AddJobForm';
+import ClientList from './pages/ClientList';
+import ClientForm from './pages/ClientForm';
 
 // Placeholder components for new routes (will be implemented in next phases)
-const ClientsPage = () => <div><h2>Clientes (En construcción)</h2></div>;
 const TechniciansPage = () => <div><h2>Técnicos (En construcción)</h2></div>;
 const NewTaskPage = ({ customers, fetchAllData }) => (
   <div style={{ padding: '20px' }}>
@@ -65,7 +66,8 @@ function App() {
         <Route path="/" element={<Dashboard />} />
 
         {/* Clientes */}
-        <Route path="/clients" element={<ClientsPage />} />
+        <Route path="/clients" element={<ClientList />} />
+        <Route path="/clients/new" element={<ClientForm />} />
 
         {/* Nueva Tarea (Formularios) */}
         <Route path="/new-task" element={<NewTaskPage customers={customers} fetchAllData={fetchAllData} />} />
