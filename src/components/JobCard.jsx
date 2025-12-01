@@ -13,8 +13,8 @@ function JobCard({ job, customer }) {
   const cardClass = statusClasses[job.status] || 'pending_diagnosis';
 
   return (
-    // Simplemente un enlace que envuelve la tarjeta
-    <Link to={`/job/${job._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+    // Enlace corregido para apuntar a /tasks/:id
+    <Link to={`/tasks/${job._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
       <div className={`job-card ${cardClass}`}>
         <strong>{job.vehicleInfo.make} {job.vehicleInfo.model} ({job.vehicleInfo.year})</strong>
         <p>Cliente: {customer ? customer.name : 'N/A'}</p>

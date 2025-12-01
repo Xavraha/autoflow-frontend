@@ -9,9 +9,6 @@ import './App.css';
 import Layout from './components/Layout';
 import Dashboard from './Dashboard'; // New Dashboard (Stats)
 import KanbanBoard from './KanbanBoard'; // Old Dashboard (Tasks)
-import JobDetailPage from './JobDetailPage';
-import AddCustomerForm from './components/AddCustomerForm';
-import AddJobForm from './components/AddJobForm';
 import ClientList from './pages/ClientList';
 import ClientForm from './pages/ClientForm';
 import TechnicianList from './pages/TechnicianList';
@@ -20,21 +17,7 @@ import TechnicianProfile from './pages/TechnicianProfile';
 import NewTask from './pages/NewTask';
 import TaskDetail from './pages/TaskDetail';
 
-// Placeholder components for new routes (will be implemented in next phases)
-const TechniciansPage = () => <div><h2>Técnicos (En construcción)</h2></div>;
-const NewTaskPage = ({ customers, fetchAllData }) => (
-  <div style={{ padding: '20px' }}>
-    <h2>Nueva Tarea</h2>
-    <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-      <div style={{ flex: 1, minWidth: '300px' }}>
-        <AddCustomerForm onCustomerAdded={fetchAllData} />
-      </div>
-      <div style={{ flex: 2, minWidth: '400px' }}>
-        <AddJobForm customers={customers} onJobAdded={fetchAllData} />
-      </div>
-    </div>
-  </div>
-);
+
 
 
 function App() {
@@ -88,9 +71,6 @@ function App() {
         <Route path="/technicians/new" element={<TechnicianForm />} />
         <Route path="/technicians/edit/:id" element={<TechnicianForm />} />
         <Route path="/technicians/:id" element={<TechnicianProfile />} />
-
-        {/* Detalle de Trabajo */}
-        <Route path="/job/:jobId" element={<JobDetailPage />} />
       </Routes>
     </Layout>
   );
