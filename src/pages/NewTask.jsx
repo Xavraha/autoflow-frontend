@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaCar, FaUser, FaTasks, FaSave, FaArrowLeft, FaSearch } from 'react-icons/fa';
+import { API_URL } from '../apiConfig';
 import './NewTask.css';
 
 const NewTask = () => {
@@ -70,7 +71,7 @@ const NewTask = () => {
         setError('');
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/vehicle-info/${formData.vin}`);
+            const response = await fetch(`${API_URL}/api/vehicle-info/${formData.vin}`);
             if (response.ok) {
                 const data = await response.json();
                 setFormData(prev => ({

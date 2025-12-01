@@ -22,10 +22,15 @@ function TaskDetail() {
 
     useEffect(() => {
         fetchJobDetails();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     const fetchJobDetails = async () => {
         try {
+            setLoading(true);
+            setJob(null);
+            setCustomer(null);
+
             const jobResponse = await fetch(`${API_URL}/api/jobs/${id}`);
             const jobData = await jobResponse.json();
             setJob(jobData);
@@ -69,6 +74,66 @@ function TaskDetail() {
             setJob({ ...job, taskSteps: updatedSteps });
         } catch (error) {
             console.error('Error deleting step:', error);
+        }
+    };
+
+    const handleUploadPhoto = async (stepIndex, file) => {
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const uploadRes = await fetch(`${API_URL}/api/upload`, {
+                method: 'POST',
+                body: formData,
+            });
+            const uploadData = await uploadRes.json();
+
+            if (!uploadRes.ok) {
+                throw new Error(uploadData.error || 'Error uploading to Cloudinary');
+            }
+
+            // Add photo to the step
+            const updatedSteps = [...job.taskSteps];
+            if (!updatedSteps[stepIndex].photos) {
+                updatedSteps[stepIndex].photos = [];
+            }
+            updatedSteps[stepIndex].photos.push({
+                url: uploadData.url,
+                label: file.name,
+                uploadedAt: new Date().toISOString()
+            });
+
+            await fetch(`${API_URL}/api/jobs/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...job, taskSteps: updatedSteps })
+            });
+
+            setJob({ ...job, taskSteps: updatedSteps });
+            alert('¡Archivo subido exitosamente!');
+        } catch (error) {
+            console.error('Error uploading photo:', error);
+            alert(`Error al subir archivo: ${error.message}`);
+        }
+    };
+
+    const handleDeletePhoto = async (stepIndex, photoIndex) => {
+        if (!window.confirm('¿Eliminar esta foto/video?')) return;
+
+        const updatedSteps = [...job.taskSteps];
+        updatedSteps[stepIndex].photos.splice(photoIndex, 1);
+
+        try {
+            await fetch(`${API_URL}/api/jobs/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...job, taskSteps: updatedSteps })
+            });
+            setJob({ ...job, taskSteps: updatedSteps });
+        } catch (error) {
+            console.error('Error deleting photo:', error);
         }
     };
 
@@ -188,23 +253,23 @@ function TaskDetail() {
                         <div className="info-grid">
                             <div className="info-item">
                                 <span className="info-label">MARCA:</span>
-                                <span className="info-value">{job.vehicleData?.make || 'N/A'}</span>
+                                <span className="info-value">{job.vehicleInfo?.make || 'N/A'}</span>
                             </div>
                             <div className="info-item">
                                 <span className="info-label">VIN:</span>
-                                <span className="info-value">{job.vehicleData?.vin || 'N/A'}</span>
+                                <span className="info-value">{job.vehicleInfo?.vin || 'N/A'}</span>
                             </div>
                             <div className="info-item">
                                 <span className="info-label">BODY:</span>
-                                <span className="info-value">{job.vehicleData?.bodyClass || 'N/A'}</span>
+                                <span className="info-value">{job.vehicleInfo?.bodyClass || 'N/A'}</span>
                             </div>
                             <div className="info-item">
                                 <span className="info-label">MODELO:</span>
-                                <span className="info-value">{job.vehicleData?.model || 'N/A'}</span>
+                                <span className="info-value">{job.vehicleInfo?.model || 'N/A'}</span>
                             </div>
                             <div className="info-item">
                                 <span className="info-label">TRIM:</span>
-                                <span className="info-value">{job.vehicleData?.trim || 'N/A'}</span>
+                                <span className="info-value">{job.vehicleInfo?.trim || 'N/A'}</span>
                             </div>
                             <div className="info-item">
                                 <span className="info-label">CYL:</span>
@@ -212,15 +277,15 @@ function TaskDetail() {
                             </div>
                             <div className="info-item">
                                 <span className="info-label">AÑO:</span>
-                                <span className="info-value">{job.vehicleData?.year || 'N/A'}</span>
+                                <span className="info-value">{job.vehicleInfo?.year || 'N/A'}</span>
                             </div>
                             <div className="info-item">
-                                <span className="info-label">BODY:</span>
-                                <span className="info-value">{job.vehicleData?.bodyClass || 'N/A'}</span>
+                                <span className="info-label">COLOR:</span>
+                                <span className="info-value">{job.vehicleInfo?.color || 'N/A'}</span>
                             </div>
                             <div className="info-item">
                                 <span className="info-label">FUEL:</span>
-                                <span className="info-value">Electric</span>
+                                <span className="info-value">{job.vehicleInfo?.fuelType || 'N/A'}</span>
                             </div>
                         </div>
                     </div>
@@ -241,14 +306,72 @@ function TaskDetail() {
                                 </div>
                                 <h4>{step.name}</h4>
 
+                                {/* Upload Section */}
+                                <div className="upload-section" style={{ marginTop: '15px', marginBottom: '15px' }}>
+                                    <input
+                                        type="file"
+                                        id={`file-upload-${index}`}
+                                        accept="image/*,video/*"
+                                        style={{ display: 'none' }}
+                                        onChange={(e) => {
+                                            if (e.target.files[0]) {
+                                                handleUploadPhoto(index, e.target.files[0]);
+                                                e.target.value = ''; // Reset input
+                                            }
+                                        }}
+                                    />
+                                    <label
+                                        htmlFor={`file-upload-${index}`}
+                                        className="upload-btn"
+                                        style={{
+                                            display: 'inline-block',
+                                            padding: '10px 20px',
+                                            background: 'linear-gradient(135deg, #00f2ff, #0066ff)',
+                                            color: '#000',
+                                            fontWeight: 'bold',
+                                            borderRadius: '5px',
+                                            cursor: 'pointer',
+                                            border: 'none',
+                                            transition: 'all 0.3s'
+                                        }}
+                                    >
+                                        <FaPlus /> UPLOAD PHOTO/VIDEO
+                                    </label>
+                                </div>
+
                                 {step.photos && step.photos.length > 0 && (
                                     <div className="media-gallery">
                                         <h5>MEDIA GALLERY</h5>
                                         <div className="gallery-grid">
                                             {step.photos.map((photo, photoIndex) => (
-                                                <div key={photoIndex} className="gallery-item">
-                                                    <img src={photo.url} alt={photo.label} />
+                                                <div key={photoIndex} className="gallery-item" style={{ position: 'relative' }}>
+                                                    {photo.url.includes('.mp4') || photo.url.includes('.mov') || photo.url.includes('.webm') ? (
+                                                        <video src={photo.url} controls style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                    ) : (
+                                                        <img src={photo.url} alt={photo.label} />
+                                                    )}
                                                     <span className="photo-label">{photo.label}</span>
+                                                    <button
+                                                        onClick={() => handleDeletePhoto(index, photoIndex)}
+                                                        style={{
+                                                            position: 'absolute',
+                                                            top: '5px',
+                                                            right: '5px',
+                                                            background: '#ff0066',
+                                                            border: 'none',
+                                                            borderRadius: '50%',
+                                                            width: '30px',
+                                                            height: '30px',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            color: '#fff',
+                                                            fontSize: '16px'
+                                                        }}
+                                                    >
+                                                        <FaTrash />
+                                                    </button>
                                                 </div>
                                             ))}
                                         </div>
