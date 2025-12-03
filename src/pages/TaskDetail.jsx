@@ -332,7 +332,7 @@ function TaskDetail() {
                         )}
 
                         {steps.map((step, index) => (
-                            <div key={index} className="action-step">
+                            <div key={step._id || index} className="action-step">
                                 <div className="step-header">
                                     <h3>PASO #{index + 1}</h3>
                                     <button className="delete-step-btn" onClick={() => handleDeleteStep(index)}>
