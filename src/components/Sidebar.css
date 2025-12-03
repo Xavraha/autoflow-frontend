@@ -24,15 +24,24 @@
     transition: all 0.3s ease;
 }
 
-.logo-container:hover .neon-logo {
-    text-shadow: 0 0 20px rgba(0, 243, 255, 1), 0 0 30px rgba(0, 243, 255, 0.5);
+/* --- ESTILOS PARA LOGO IMAGEN --- */
+.sidebar-logo-img {
+    max-width: 100%;
+    height: auto;
+    max-height: 120px;
+    /* Ajustado para que se vea bien */
+    filter: drop-shadow(0 0 10px rgba(0, 243, 255, 0.5));
+    transition: all 0.3s ease;
+    display: block;
+    margin: 0 auto;
+}
+
+.logo-container:hover .sidebar-logo-img {
+    filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.8));
     transform: scale(1.05);
 }
 
-.logo-container:hover .flow-text {
-    text-shadow: 0 0 20px rgba(0, 243, 255, 1), 0 0 30px rgba(0, 243, 255, 0.5);
-}
-
+/* Estilos de texto antiguos (mantenidos por si acaso, pero no usados si hay imagen) */
 .neon-logo {
     font-family: 'Orbitron', sans-serif;
     /* Tech font */
@@ -149,6 +158,10 @@
         font-size: 1.5em;
     }
 
+    .sidebar-logo-img {
+        max-height: 80px;
+    }
+
     .nav-item span {
         font-size: 0.85em;
     }
@@ -180,10 +193,8 @@
         line-height: 1;
     }
 
-    .flow-text {
-        display: block;
-        margin-top: 2px;
-        font-size: 0.8em;
+    .sidebar-logo-img {
+        max-height: 50px;
     }
 
     .nav-menu {
@@ -265,6 +276,10 @@
 
     .neon-logo {
         font-size: 1em;
+    }
+
+    .sidebar-logo-img {
+        max-height: 40px;
     }
 
     .nav-item {

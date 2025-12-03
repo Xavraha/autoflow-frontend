@@ -267,13 +267,32 @@ function TaskDetail() {
                     {/* Info Vehículo */}
                     <div className="vehicle-info-grid">
                         <h3>INFORMACIÓN DEL VEHÍCULO</h3>
+
+                        {/* VIN Section - Full Width */}
+                        <div className="vin-section" style={{ marginBottom: '1.5rem' }}>
+                            <span className="info-label" style={{ display: 'block', marginBottom: '0.5rem', color: '#00f3ff' }}>VIN CODE</span>
+                            <div className="vin-display" style={{
+                                background: 'rgba(10, 10, 20, 0.6)',
+                                padding: '1rem',
+                                border: '1px solid rgba(0, 243, 255, 0.3)',
+                                borderRadius: '6px',
+                                color: '#fff',
+                                fontFamily: 'Orbitron, sans-serif',
+                                fontSize: '1.1rem',
+                                letterSpacing: '2px',
+                                boxShadow: 'inset 0 0 10px rgba(0, 0, 0, 0.5)'
+                            }}>
+                                {job.vehicleInfo?.vin || 'N/A'}
+                            </div>
+                        </div>
+
                         <div className="info-grid">
                             <div className="info-item"><span className="info-label">MARCA:</span><span className="info-value">{job.vehicleInfo?.make}</span></div>
                             <div className="info-item"><span className="info-label">MODELO:</span><span className="info-value">{job.vehicleInfo?.model}</span></div>
                             <div className="info-item"><span className="info-label">AÑO:</span><span className="info-value">{job.vehicleInfo?.year}</span></div>
-                            <div className="info-item"><span className="info-label">VIN:</span><span className="info-value">{job.vehicleInfo?.vin || 'N/A'}</span></div>
-                            <div className="info-item"><span className="info-label">CLIENTE:</span><span className="info-value">{customer?.name || 'N/A'}</span></div>
                             <div className="info-item"><span className="info-label">MOTOR:</span><span className="info-value">{job.vehicleInfo?.engineCylinders || 'N/A'}</span></div>
+                            <div className="info-item"><span className="info-label">CLIENTE:</span><span className="info-value">{customer?.name || 'N/A'}</span></div>
+                            <div className="info-item"><span className="info-label">FUEL:</span><span className="info-value">{job.vehicleInfo?.fuelType || 'N/A'}</span></div>
                         </div>
                     </div>
                 </div>

@@ -11,7 +11,7 @@ function Sidebar() {
     return (
         <div className="sidebar">
             <Link to="/" className="logo-container">
-                <h1 className="neon-logo">AUTO<span className="flow-text">FLOW</span></h1>
+                <img src="/src/assets/logo-full.jpg" alt="AutoFlow Logo" className="sidebar-logo-img" />
             </Link>
 
             <nav className="nav-menu">
