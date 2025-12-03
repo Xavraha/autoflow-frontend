@@ -104,18 +104,26 @@ function TaskDetail() {
         if (!window.confirm('¿Estás seguro de eliminar este paso?')) return;
 
         try {
+            console.log('Eliminando paso:', stepIndex);
             const updatedTasks = [...job.tasks];
             updatedTasks[0].steps.splice(stepIndex, 1);
 
-            await fetch(`${API_URL}/api/jobs/${id}`, {
+            const response = await fetch(`${API_URL}/api/jobs/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ...job, tasks: updatedTasks })
             });
 
+            if (!response.ok) {
+                throw new Error('Error en la respuesta del servidor');
+            }
+
+            console.log('Paso eliminado, recargando datos...');
             await fetchJobDetails();
+            alert('Paso eliminado correctamente');
         } catch (error) {
             console.error('Error deleting step:', error);
+            alert('Error al eliminar paso: ' + error.message);
         }
     };
 
@@ -125,13 +133,20 @@ function TaskDetail() {
         formData.append('file', file);
 
         try {
+            console.log('Subiendo archivo:', file.name, file.type);
+
             // 1. Subir a Cloudinary
             const uploadRes = await fetch(`${API_URL}/api/upload`, {
                 method: 'POST',
                 body: formData,
             });
             const uploadData = await uploadRes.json();
-            if (!uploadRes.ok) throw new Error(uploadData.error || 'Error uploading');
+
+            if (!uploadRes.ok) {
+                throw new Error(uploadData.error || 'Error uploading');
+            }
+
+            console.log('Archivo subido a Cloudinary:', uploadData.url);
 
             // 2. Actualizar el paso con la URL
             const updatedTasks = [...job.tasks];
@@ -139,28 +154,38 @@ function TaskDetail() {
 
             // Determinar si es video o imagen
             const isVideoFile = file.type.startsWith('video/');
+            console.log('Es video?', isVideoFile);
+
             if (isVideoFile) {
                 step.video_url = uploadData.url;
             } else {
                 // Si ya hay photo_before, usar photo_after
                 if (step.photo_before) {
+                    console.log('Añadiendo como photo_after');
                     step.photo_after = uploadData.url;
                 } else {
+                    console.log('Añadiendo como photo_before');
                     step.photo_before = uploadData.url;
                 }
             }
 
-            await fetch(`${API_URL}/api/jobs/${id}`, {
+            console.log('Actualizando job con nueva media...');
+            const updateRes = await fetch(`${API_URL}/api/jobs/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ...job, tasks: updatedTasks })
             });
 
+            if (!updateRes.ok) {
+                throw new Error('Error al actualizar el job');
+            }
+
+            console.log('Job actualizado, recargando datos...');
             await fetchJobDetails();
             alert('Archivo subido exitosamente');
         } catch (error) {
             console.error('Error uploading photo:', error);
-            alert('Error al subir archivo');
+            alert('Error al subir archivo: ' + error.message);
         }
     };
 
