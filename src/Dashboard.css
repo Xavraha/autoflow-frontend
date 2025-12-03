@@ -64,7 +64,7 @@
 }
 
 .stat-card.pink .stat-icon {
-    color: #ff00ff;
+    color: var(--neon-cyan);
 }
 
 .stat-card.green {
@@ -91,7 +91,7 @@
 }
 
 .stat-card.purple .stat-icon {
-    color: #9d00ff;
+    color: #0066ff;
 }
 
 

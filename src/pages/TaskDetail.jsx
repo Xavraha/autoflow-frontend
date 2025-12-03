@@ -294,7 +294,7 @@ function TaskDetail() {
                 {/* --- PANEL DERECHO: SECCIÓN 2 (Pasos y Acción) --- */}
                 <div className="action-console">
                     <div className="vehicle-header">
-                        <h2 style={{ color: '#d900ff' }}>SECCIÓN 2: PROCESO TÉCNICO</h2>
+                        <h2 className="section-title">SECCIÓN 2: PROCESO TÉCNICO</h2>
                         <p style={{ fontSize: '0.9rem', color: '#888', marginTop: '0.5rem' }}>
                             Tarea: {currentTask.title}
                         </p>

@@ -105,7 +105,7 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    border: 1px solid #d900ff;
+    border: 1px solid var(--neon-cyan);
 }
 
 .client-avatar-small img {
@@ -115,12 +115,12 @@
 }
 
 .status-badge.vip {
-    color: #d900ff;
-    border: 1px solid #d900ff;
+    color: var(--neon-cyan);
+    border: 1px solid var(--neon-cyan);
     padding: 4px 8px;
     border-radius: 4px;
     font-size: 0.8em;
-    box-shadow: 0 0 5px rgba(217, 0, 255, 0.2);
+    box-shadow: 0 0 5px rgba(0, 243, 255, 0.2);
 }
 
 .actions {
