@@ -103,13 +103,9 @@ function TaskDetail() {
             const result = await response.json();
             console.log('Paso creado exitosamente:', result);
 
-            // Recargar datos para mostrar el nuevo paso
-            console.log('Recargando datos del job...');
-            await fetchJobDetails(false); // No mostrar loading
-            console.log('Datos recargados, cerrando modal...');
-            setNewStepData({ name: '', comment: '' });
-            setShowAddStepModal(false);
+            //Recargar la página completa para mostrar el nuevo paso
             alert('Paso creado exitosamente');
+            window.location.reload();
         } catch (error) {
             console.error('Error adding step:', error);
             alert('Error al agregar paso: ' + error.message);
