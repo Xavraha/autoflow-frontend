@@ -296,6 +296,13 @@ function TaskDetail() {
                                 </div>
                                 <h4 style={{ fontSize: '1.2rem', color: '#fff' }}>{step.description}</h4>
 
+                                {step.comment && (
+                                    <div className="step-comment" style={{ marginTop: '0.5rem', padding: '0.75rem', background: 'rgba(0, 243, 255, 0.05)', borderLeft: '3px solid #00f3ff', borderRadius: '4px' }}>
+                                        <h5 style={{ fontSize: '0.8rem', color: '#00f3ff', marginBottom: '0.5rem' }}>COMENTARIO TÉCNICO:</h5>
+                                        <p style={{ fontSize: '0.9rem', color: '#ccc', margin: 0 }}>{step.comment}</p>
+                                    </div>
+                                )}
+
                                 {/* Galería Multimedia del Paso */}
                                 <div className="media-gallery" style={{ marginTop: '1rem' }}>
                                     <h5>EVIDENCIA MULTIMEDIA</h5>
@@ -396,7 +403,16 @@ function TaskDetail() {
                                 autoFocus
                             />
                         </div>
-
+                        <div style={{ marginBottom: '2rem' }}>
+                            <label style={{ display: 'block', color: '#aaa', marginBottom: '0.5rem', fontSize: '0.8rem' }}>COMENTARIO (Opcional)</label>
+                            <textarea
+                                rows="3"
+                                placeholder="Detalles técnicos..."
+                                value={newStepData.comment}
+                                onChange={(e) => setNewStepData({ ...newStepData, comment: e.target.value })}
+                                style={{ width: '100%', padding: '10px', background: '#0a0a15', border: '1px solid #333', color: '#fff', borderRadius: '4px', resize: 'vertical' }}
+                            />
+                        </div>
                         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
                             <button
                                 onClick={() => setShowAddStepModal(false)}
