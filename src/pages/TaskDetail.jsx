@@ -82,21 +82,35 @@ function TaskDetail() {
         };
 
         try {
+            console.log('Creando nuevo paso:', newStep);
+
             // Usar el endpoint correcto del backend
             const taskId = job.tasks[0]._id;
-            await fetch(`${API_URL}/api/jobs/${id}/tasks/${taskId}/steps`, {
+            console.log('Task ID:', taskId, 'Job ID:', id);
+
+            const response = await fetch(`${API_URL}/api/jobs/${id}/tasks/${taskId}/steps`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newStep)
             });
 
+            if (!response.ok) {
+                const errorData = await response.text();
+                console.error('Error response:', errorData);
+                throw new Error('Error al crear paso en el servidor');
+            }
+
+            const result = await response.json();
+            console.log('Paso creado exitosamente:', result);
+
             // Recargar datos para mostrar el nuevo paso
             await fetchJobDetails();
             setNewStepData({ name: '', comment: '' });
             setShowAddStepModal(false);
+            alert('Paso creado exitosamente');
         } catch (error) {
             console.error('Error adding step:', error);
-            alert('Error al agregar paso');
+            alert('Error al agregar paso: ' + error.message);
         }
     };
 
