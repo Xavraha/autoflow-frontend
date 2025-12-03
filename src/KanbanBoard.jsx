@@ -22,13 +22,20 @@ const STATUS_COLORS = {
   canceled: "#6c757d"
 };
 
-function KanbanBoard({ jobs, customers }) {
+function KanbanBoard({ jobs, customers, refreshJobs }) {
   const navigate = useNavigate();
   const [stats, setStats] = useState({
     vehiclesInShop: 0,
     criticalTasks: 0,
     efficiency: 0
   });
+
+  // Recargar datos al montar el componente para sincronizar cambios de TaskDetail
+  useEffect(() => {
+    if (refreshJobs) {
+      refreshJobs();
+    }
+  }, []); // Se ejecuta solo al montar
 
   useEffect(() => {
     // Calculate stats

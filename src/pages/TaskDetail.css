@@ -105,98 +105,6 @@
     box-shadow: 0 0 20px rgba(0, 243, 255, 0.6);
 }
 
-/* Progress Timeline */
-.progress-timeline {
-    background: linear-gradient(135deg, rgba(10, 10, 20, 0.9), rgba(20, 20, 35, 0.9));
-    border: 2px solid rgba(0, 243, 255, 0.3);
-    border-radius: 12px;
-    padding: 1.5rem;
-}
-
-.progress-timeline h3 {
-    font-family: 'Orbitron', sans-serif;
-    color: #00f3ff;
-    margin: 0 0 1.5rem 0;
-    font-size: 0.9rem;
-}
-
-.timeline-steps {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
-}
-
-.timeline-step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    position: relative;
-    flex: 1;
-}
-
-.step-icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    position: relative;
-    z-index: 2;
-}
-
-.step-icon.completed {
-    background: linear-gradient(135deg, #5cb85c, #4caf50);
-    border: 3px solid #5cb85c;
-    color: #fff;
-    box-shadow: 0 0 20px rgba(92, 184, 92, 0.6);
-}
-
-.step-icon.active {
-    background: linear-gradient(135deg, #00f3ff, #0066ff);
-    border: 3px solid #00f3ff;
-    box-shadow: 0 0 30px rgba(0, 243, 255, 0.8);
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-
-    0%,
-    100% {
-        box-shadow: 0 0 20px rgba(0, 243, 255, 0.8);
-    }
-
-    50% {
-        box-shadow: 0 0 40px rgba(0, 243, 255, 1);
-    }
-}
-
-.step-icon.pending {
-    background: rgba(40, 40, 50, 0.5);
-    border: 3px solid rgba(255, 255, 255, 0.2);
-}
-
-.step-connector {
-    position: absolute;
-    top: 25px;
-    left: 50%;
-    width: 100%;
-    height: 3px;
-    background: linear-gradient(90deg, currentColor 50%, rgba(255, 255, 255, 0.2) 50%);
-    z-index: 1;
-}
-
-.step-label {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 0.7rem;
-    color: rgba(255, 255, 255, 0.8);
-    text-align: center;
-    font-weight: bold;
-}
-
 /* Vehicle Info Grid */
 .vehicle-info-grid {
     background: linear-gradient(135deg, rgba(10, 10, 20, 0.9), rgba(20, 20, 35, 0.9));
@@ -331,10 +239,14 @@
     border: 1px solid rgba(0, 243, 255, 0.3);
 }
 
-.gallery-item img {
+/* AJUSTE: Imágenes y videos con tamaño controlado */
+.gallery-item img,
+.gallery-item video {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    max-height: 200px;
+    /* Limitar altura máxima */
 }
 
 .step-comment {
@@ -351,14 +263,18 @@
     color: rgba(255, 255, 255, 0.9);
 }
 
+/* AJUSTE: Botón Nuevo Paso tamaño normal */
 .add-step-btn {
-    width: 100%;
+    width: auto;
+    /* No ocupar todo el ancho */
+    min-width: 150px;
+    max-width: 250px;
     background: linear-gradient(135deg, #d900ff, #ff00ff);
     border: 2px solid #d900ff;
     color: #fff;
-    padding: 1rem;
+    padding: 0.8rem 1.5rem;
     font-family: 'Orbitron', sans-serif;
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: bold;
     border-radius: 8px;
     cursor: pointer;
@@ -451,20 +367,17 @@
         text-align: center;
     }
 
-    .timeline-steps {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .step-connector {
-        display: none;
-    }
-
     .info-grid {
         grid-template-columns: 1fr;
     }
 
     .gallery-grid {
         grid-template-columns: 1fr;
+    }
+
+    /* Ajuste para móvil: Botón no tan ancho */
+    .add-step-btn {
+        width: 100%;
+        max-width: none;
     }
 }

@@ -62,7 +62,7 @@ function App() {
         <Route path="/new-task" element={<NewTask />} />
 
         {/* Tareas (Kanban) */}
-        <Route path="/tasks" element={<KanbanBoard jobs={jobs} customers={customers} />} />
+        <Route path="/tasks" element={<KanbanBoard jobs={jobs} customers={customers} refreshJobs={fetchAllData} />} />
         <Route path="/tasks/new" element={<NewTask />} />
         <Route path="/tasks/:id" element={<TaskDetail />} />
 
