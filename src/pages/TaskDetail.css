@@ -4,6 +4,8 @@
     min-height: 100vh;
     padding: 1.5rem;
     color: #fff;
+    max-width: 1600px;
+    margin: 0 auto;
 }
 
 /* Header */
@@ -33,20 +35,18 @@
     box-shadow: 0 0 20px rgba(0, 243, 255, 0.6);
 }
 
-/* Layout */
+/* Layout Principal: Apilado Vertical */
 .detail-layout {
-    display: grid;
-    grid-template-columns: 1fr 400px;
+    display: flex;
+    flex-direction: column;
     gap: 2rem;
 }
 
-/* Left Panel */
-.left-panel {
+/* --- SECCIÓN SUPERIOR: ESTADO E INFO --- */
+.top-section {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    overflow-y: auto;
-    max-height: calc(100vh - 150px);
 }
 
 .vehicle-header h2 {
@@ -58,12 +58,13 @@
     border-bottom: 2px solid rgba(0, 243, 255, 0.3);
 }
 
-/* Status List */
+/* Status List - Full Width */
 .status-list-section {
     background: linear-gradient(135deg, rgba(10, 10, 20, 0.9), rgba(20, 20, 35, 0.9));
     border: 2px solid rgba(0, 243, 255, 0.3);
     border-radius: 12px;
     padding: 1.5rem;
+    width: 100%;
 }
 
 .status-list-section h3 {
@@ -77,20 +78,27 @@
     display: flex;
     gap: 0.8rem;
     flex-wrap: wrap;
+    justify-content: flex-start;
+    /* Alineado a la izquierda o space-between si se prefiere */
 }
 
 .status-badge {
     background: rgba(30, 30, 40, 0.8);
     border: 2px solid rgba(255, 255, 255, 0.2);
     color: rgba(255, 255, 255, 0.7);
-    padding: 0.6rem 1.2rem;
+    padding: 0.8rem 1.5rem;
+    /* Más grandes */
     border-radius: 20px;
     font-family: 'Orbitron', sans-serif;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
     text-transform: uppercase;
+    flex: 1;
+    /* Para que ocupen espacio equitativo si se desea, o quitar para tamaño auto */
+    text-align: center;
+    min-width: 150px;
 }
 
 .status-badge:hover {
@@ -105,89 +113,150 @@
     box-shadow: 0 0 20px rgba(0, 243, 255, 0.6);
 }
 
-/* Vehicle Info Grid */
+/* Vehicle Info Grid - Full Width, 2 Rows */
 .vehicle-info-grid {
     background: linear-gradient(135deg, rgba(10, 10, 20, 0.9), rgba(20, 20, 35, 0.9));
     border: 2px solid rgba(0, 243, 255, 0.3);
     border-radius: 12px;
     padding: 1.5rem;
+    width: 100%;
 }
 
 .vehicle-info-grid h3 {
     font-family: 'Orbitron', sans-serif;
     color: #00f3ff;
-    margin: 0 0 1rem 0;
+    margin: 0 0 1.5rem 0;
     font-size: 0.9rem;
 }
 
 .info-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
+    /* 4 columnas para lograr 2 filas con 8 items aprox */
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem 1rem;
+    /* Gap vertical mayor */
 }
 
 .info-item {
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
+    gap: 0.5rem;
 }
 
 .info-label {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     color: rgba(255, 255, 255, 0.5);
     font-weight: bold;
+    text-transform: uppercase;
 }
 
 .info-value {
-    font-size: 0.9rem;
+    font-size: 1.1rem;
+    /* Más grande */
     color: #fff;
     font-family: 'Orbitron', sans-serif;
 }
 
-/* Right Panel - Action Console */
+/* --- SECCIÓN INFERIOR: PASOS (ACTION CONSOLE) --- */
 .action-console {
+    background: transparent;
+    /* Quitar fondo contenedor principal para que los pasos sean tarjetas individuales */
+    border: none;
+    padding: 0;
+    max-height: none;
+    overflow: visible;
+}
+
+.section-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
     background: linear-gradient(135deg, rgba(10, 10, 20, 0.95), rgba(20, 20, 35, 0.95));
     border: 2px solid var(--neon-cyan);
     border-radius: 12px;
     padding: 1.5rem;
-    max-height: calc(100vh - 150px);
-    overflow-y: auto;
 }
 
-.action-console h2 {
+.section-title {
     font-family: 'Orbitron', sans-serif;
     color: var(--neon-cyan);
-    margin: 0 0 1.5rem 0;
+    margin: 0;
     font-size: 1.2rem;
     text-shadow: 0 0 10px rgba(0, 243, 255, 0.6);
 }
 
-.steps-list {
+.add-step-btn {
+    width: auto;
+    min-width: 150px;
+    background: linear-gradient(135deg, var(--neon-cyan), #0066ff);
+    border: 2px solid var(--neon-cyan);
+    color: #fff;
+    padding: 0.8rem 1.5rem;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+}
+
+.add-step-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 30px rgba(0, 243, 255, 0.7);
+}
+
+/* GRID DE PASOS (3 Columnas) */
+.steps-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
     margin-bottom: 1.5rem;
 }
 
+/* TARJETA DE PASO INDIVIDUAL */
 .action-step {
-    background: rgba(30, 30, 40, 0.6);
-    border: 1px solid rgba(0, 243, 255, 0.3);
-    border-radius: 8px;
+    background: rgba(20, 20, 30, 0.8);
+    border: 1px solid var(--neon-cyan);
+    border-radius: 12px;
     padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: relative;
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
+    transition: transform 0.3s ease;
 }
 
+.action-step:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 25px rgba(0, 243, 255, 0.2);
+}
+
+/* 1. Header: Paso # y Eliminar */
 .step-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.8rem;
 }
 
 .step-header h3 {
     font-family: 'Orbitron', sans-serif;
-    color: var(--neon-cyan);
+    color: #00ff00;
+    /* Verde Neon según imagen */
     margin: 0;
-    font-size: 0.8rem;
+    font-size: 1rem;
+    background: rgba(0, 255, 0, 0.1);
+    padding: 0.3rem 0.8rem;
+    border-radius: 4px;
+    border: 1px solid #00ff00;
 }
 
 .delete-step-btn {
@@ -211,24 +280,54 @@
     box-shadow: 0 0 15px rgba(255, 0, 85, 0.6);
 }
 
-.action-step h4 {
-    color: #fff;
-    margin: 0 0 1rem 0;
-    font-size: 1rem;
+/* 2. Título del Paso */
+.step-title {
+    color: #ff9900;
+    /* Naranja según imagen */
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border: 1px solid #ff9900;
+    padding: 0.5rem;
+    border-radius: 6px;
+    background: rgba(255, 153, 0, 0.1);
+    text-align: center;
 }
 
-.media-gallery h5,
+/* 3. Comentario Técnico */
+.step-comment {
+    background: rgba(0, 243, 255, 0.05);
+    border: 1px solid var(--neon-cyan);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: auto;
+    /* Empujar hacia abajo si hay espacio */
+}
+
 .step-comment h5 {
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.6);
-    margin: 0 0 0.8rem 0;
+    color: var(--neon-cyan);
+    margin: 0 0 0.5rem 0;
+    font-size: 0.8rem;
     font-weight: bold;
+}
+
+.step-comment p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #fff;
+    line-height: 1.4;
+}
+
+/* 4. Evidencia Multimedia */
+.media-gallery {
+    margin-top: 0.5rem;
 }
 
 .gallery-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.8rem;
+    grid-template-columns: 1fr;
+    /* 1 columna para imagen grande */
+    gap: 0.5rem;
 }
 
 .gallery-item {
@@ -236,62 +335,39 @@
     aspect-ratio: 16/9;
     border-radius: 6px;
     overflow: hidden;
-    border: 1px solid rgba(0, 243, 255, 0.3);
+    border: 2px solid #ffcc00;
+    /* Borde amarillo según imagen */
 }
 
-/* AJUSTE: Imágenes y videos con tamaño controlado */
 .gallery-item img,
 .gallery-item video {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    max-height: 200px;
-    /* Limitar altura máxima */
 }
 
-.step-comment {
-    margin-top: 1rem;
-}
-
-.step-comment p {
-    background: rgba(0, 0, 0, 0.3);
-    border-left: 3px solid #00f3ff;
-    padding: 0.8rem;
-    margin: 0;
-    font-size: 0.85rem;
-    line-height: 1.5;
-    color: rgba(255, 255, 255, 0.9);
-}
-
-/* AJUSTE: Botón Nuevo Paso tamaño normal */
-.add-step-btn {
-    width: auto;
-    /* No ocupar todo el ancho */
-    min-width: 150px;
-    max-width: 250px;
-    background: linear-gradient(135deg, var(--neon-cyan), #0066ff);
-    border: 2px solid var(--neon-cyan);
+.media-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.7);
     color: #fff;
-    padding: 0.8rem 1.5rem;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 0.9rem;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.7rem;
     font-weight: bold;
-    border-radius: 8px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.8rem;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+    border-top-right-radius: 6px;
 }
 
-.add-step-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 30px rgba(0, 243, 255, 0.7);
+.no-steps-message {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px dashed rgba(255, 255, 255, 0.2);
 }
 
-/* Modal Styles */
+/* Modal Styles (Mismos de antes) */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -329,55 +405,34 @@
     }
 }
 
-/* Ocultar scrollbar pero mantener funcionalidad */
-.steps-list,
-.left-panel,
-.action-console {
-    scrollbar-width: none;
-    /* Firefox */
-    -ms-overflow-style: none;
-    /* IE y Edge */
-}
-
-.steps-list::-webkit-scrollbar,
-.left-panel::-webkit-scrollbar,
-.action-console::-webkit-scrollbar {
-    display: none;
-    /* Chrome, Safari, Opera */
-}
-
 /* Responsive */
 @media (max-width: 1200px) {
-    .detail-layout {
-        grid-template-columns: 1fr;
+    .steps-list {
+        grid-template-columns: repeat(2, 1fr);
+        /* 2 columnas en pantallas medianas */
     }
 
-    .action-console {
-        max-height: none;
+    .info-grid {
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 
 @media (max-width: 768px) {
+    .steps-list {
+        grid-template-columns: 1fr;
+        /* 1 columna en móvil */
+    }
+
+    .info-grid {
+        grid-template-columns: repeat(2, 1fr);
+        /* 2 columnas en móvil para info */
+    }
+
     .status-badges {
         flex-direction: column;
     }
 
     .status-badge {
         width: 100%;
-        text-align: center;
-    }
-
-    .info-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .gallery-grid {
-        grid-template-columns: 1fr;
-    }
-
-    /* Ajuste para móvil: Botón no tan ancho */
-    .add-step-btn {
-        width: 100%;
-        max-width: none;
     }
 }

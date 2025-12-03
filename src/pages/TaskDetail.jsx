@@ -68,7 +68,7 @@ function TaskDetail() {
         }
     };
 
-    // --- FUNCIONES DE PASOS (CORREGIDAS PARA USAR tasks[0].steps) ---
+    // --- FUNCIONES DE PASOS ---
 
     const handleAddStep = async () => {
         if (!newStepData.name.trim()) return alert('El nombre del paso es requerido');
@@ -232,9 +232,6 @@ function TaskDetail() {
     const currentTask = job.tasks[0];
     const steps = currentTask.steps || [];
 
-    // Helpers para UI
-    const isVideo = (url) => url && url.match(/\.(mp4|webm|mov)$/i);
-
     return (
         <div className="task-detail-view">
             {/* Header */}
@@ -242,19 +239,11 @@ function TaskDetail() {
                 <button className="back-btn" onClick={() => navigate(-1)}>
                     <FaArrowLeft /> VOLVER
                 </button>
-                {/* Botón Principal para Activar Modal */}
-                <button
-                    className="add-step-btn"
-                    style={{ width: 'auto', padding: '0.8rem 1.5rem' }}
-                    onClick={() => setShowAddStepModal(true)}
-                >
-                    <FaPlus /> NUEVO PASO
-                </button>
             </div>
 
             <div className="detail-layout">
-                {/* --- PANEL IZQUIERDO (Info y Status) --- */}
-                <div className="left-panel">
+                {/* --- SECCIÓN SUPERIOR: ESTADO E INFO --- */}
+                <div className="top-section">
                     <div className="vehicle-header">
                         <h2>ESTADO DEL VEHÍCULO</h2>
                     </div>
@@ -275,8 +264,6 @@ function TaskDetail() {
                         </div>
                     </div>
 
-                    {/* Timeline ELIMINADO */}
-
                     {/* Info Vehículo */}
                     <div className="vehicle-info-grid">
                         <h3>INFORMACIÓN DEL VEHÍCULO</h3>
@@ -291,18 +278,22 @@ function TaskDetail() {
                     </div>
                 </div>
 
-                {/* --- PANEL DERECHO: SECCIÓN 2 (Pasos y Acción) --- */}
+                {/* --- SECCIÓN INFERIOR: PASOS (GRID) --- */}
                 <div className="action-console">
-                    <div className="vehicle-header">
+                    <div className="section-header-row">
                         <h2 className="section-title">SECCIÓN 2: PROCESO TÉCNICO</h2>
-                        <p style={{ fontSize: '0.9rem', color: '#888', marginTop: '0.5rem' }}>
-                            Tarea: {currentTask.title}
-                        </p>
+                        <button className="add-step-btn" onClick={() => setShowAddStepModal(true)}>
+                            <FaPlus /> NUEVO PASO
+                        </button>
                     </div>
+
+                    <p style={{ fontSize: '0.9rem', color: '#888', marginTop: '0.5rem', marginBottom: '1.5rem' }}>
+                        Tarea: {currentTask.title}
+                    </p>
 
                     <div className="steps-list">
                         {steps.length === 0 && (
-                            <div style={{ textAlign: 'center', padding: '2rem', color: '#666' }}>
+                            <div className="no-steps-message">
                                 <p>No hay pasos registrados aún.</p>
                                 <p>Usa el botón "NUEVO PASO" arriba a la derecha.</p>
                             </div>
@@ -310,30 +301,34 @@ function TaskDetail() {
 
                         {steps.map((step, index) => (
                             <div key={step._id || index} className="action-step">
+                                {/* 1. Header: Paso # y Eliminar */}
                                 <div className="step-header">
                                     <h3>PASO #{index + 1}</h3>
                                     <button className="delete-step-btn" onClick={() => handleDeleteStep(index)}>
                                         <FaTrash /> ELIMINAR
                                     </button>
                                 </div>
-                                <h4 style={{ fontSize: '1.2rem', color: '#fff' }}>{step.description}</h4>
 
+                                {/* 2. Título del Paso */}
+                                <h4 className="step-title">{step.description}</h4>
+
+                                {/* 3. Comentario Técnico */}
                                 {step.comment && (
-                                    <div className="step-comment" style={{ marginTop: '0.5rem', padding: '0.75rem', background: 'rgba(0, 243, 255, 0.05)', borderLeft: '3px solid #00f3ff', borderRadius: '4px' }}>
-                                        <h5 style={{ fontSize: '0.8rem', color: '#00f3ff', marginBottom: '0.5rem' }}>COMENTARIO TÉCNICO:</h5>
-                                        <p style={{ fontSize: '0.9rem', color: '#ccc', margin: 0 }}>{step.comment}</p>
+                                    <div className="step-comment">
+                                        <h5>COMENTARIO TÉCNICO:</h5>
+                                        <p>{step.comment}</p>
                                     </div>
                                 )}
 
-                                {/* Galería Multimedia del Paso */}
-                                <div className="media-gallery" style={{ marginTop: '1rem' }}>
-                                    <h5>EVIDENCIA MULTIMEDIA</h5>
+                                {/* 4. Evidencia Multimedia */}
+                                <div className="media-gallery">
+                                    {/* <h5>EVIDENCIA MULTIMEDIA</h5> - Oculto para ahorrar espacio si se desea, o mostrar */}
                                     <div className="gallery-grid">
                                         {/* Foto ANTES */}
                                         {step.photo_before && (
                                             <div className="gallery-item">
                                                 <img src={step.photo_before} alt="Antes" onClick={() => window.open(step.photo_before, '_blank')} style={{ cursor: 'pointer' }} />
-                                                <span style={{ position: 'absolute', bottom: '5px', left: '5px', background: 'rgba(0,0,0,0.7)', padding: '2px 6px', fontSize: '0.7rem', borderRadius: '3px' }}>ANTES</span>
+                                                <span className="media-label">ANTES</span>
                                                 <button
                                                     onClick={() => handleDeletePhoto(index, 'photo_before')}
                                                     style={{
@@ -352,7 +347,7 @@ function TaskDetail() {
                                         {step.photo_after && (
                                             <div className="gallery-item">
                                                 <img src={step.photo_after} alt="Después" onClick={() => window.open(step.photo_after, '_blank')} style={{ cursor: 'pointer' }} />
-                                                <span style={{ position: 'absolute', bottom: '5px', left: '5px', background: 'rgba(0,0,0,0.7)', padding: '2px 6px', fontSize: '0.7rem', borderRadius: '3px' }}>DESPUÉS</span>
+                                                <span className="media-label">DESPUÉS</span>
                                                 <button
                                                     onClick={() => handleDeletePhoto(index, 'photo_after')}
                                                     style={{
@@ -370,8 +365,8 @@ function TaskDetail() {
                                         {/* Video */}
                                         {step.video_url && (
                                             <div className="gallery-item">
-                                                <video src={step.video_url} controls style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                                <span style={{ position: 'absolute', bottom: '5px', left: '5px', background: 'rgba(0,0,0,0.7)', padding: '2px 6px', fontSize: '0.7rem', borderRadius: '3px' }}>VIDEO</span>
+                                                <video src={step.video_url} controls />
+                                                <span className="media-label">VIDEO</span>
                                                 <button
                                                     onClick={() => handleDeletePhoto(index, 'video_url')}
                                                     style={{
@@ -410,7 +405,7 @@ function TaskDetail() {
                 </div>
             </div>
 
-            {/* --- MODAL FLOTANTE (Recuperado y Estilizado) --- */}
+            {/* --- MODAL FLOTANTE --- */}
             {showAddStepModal && (
                 <div className="modal-overlay" onClick={() => setShowAddStepModal(false)}>
                     <div className="modal-content" onClick={e => e.stopPropagation()}>
