@@ -31,9 +31,9 @@ function TaskDetail() {
         fetchJobDetails();
     }, [id]);
 
-    const fetchJobDetails = async () => {
+    const fetchJobDetails = async (showLoading = true) => {
         try {
-            setLoading(true);
+            if (showLoading) setLoading(true);
             const jobResponse = await fetch(`${API_URL}/api/jobs/${id}`);
             const jobData = await jobResponse.json();
             console.log('Job data loaded:', jobData); // Debug
@@ -48,7 +48,7 @@ function TaskDetail() {
         } catch (error) {
             console.error('Error fetching job details:', error);
         } finally {
-            setLoading(false);
+            if (showLoading) setLoading(false);
         }
     };
 
@@ -105,7 +105,7 @@ function TaskDetail() {
 
             // Recargar datos para mostrar el nuevo paso
             console.log('Recargando datos del job...');
-            await fetchJobDetails();
+            await fetchJobDetails(false); // No mostrar loading
             console.log('Datos recargados, cerrando modal...');
             setNewStepData({ name: '', comment: '' });
             setShowAddStepModal(false);
@@ -138,7 +138,7 @@ function TaskDetail() {
             }
 
             console.log('Paso eliminado, recargando datos...');
-            await fetchJobDetails();
+            await fetchJobDetails(false);
             alert('Paso eliminado correctamente');
         } catch (error) {
             console.error('Error deleting step:', error);
@@ -201,7 +201,7 @@ function TaskDetail() {
             }
 
             console.log('Job actualizado, recargando datos...');
-            await fetchJobDetails();
+            await fetchJobDetails(false);
             alert('Archivo subido exitosamente');
         } catch (error) {
             console.error('Error uploading photo:', error);
@@ -222,7 +222,7 @@ function TaskDetail() {
                 body: JSON.stringify({ ...job, tasks: updatedTasks })
             });
 
-            await fetchJobDetails();
+            await fetchJobDetails(false);
         } catch (error) {
             console.error('Error deleting photo:', error);
         }
