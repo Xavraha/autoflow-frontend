@@ -18,6 +18,19 @@
 .logo-container {
     margin-bottom: 40px;
     text-align: center;
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.logo-container:hover .neon-logo {
+    text-shadow: 0 0 20px rgba(0, 243, 255, 1), 0 0 30px rgba(0, 243, 255, 0.5);
+    transform: scale(1.05);
+}
+
+.logo-container:hover .flow-text {
+    text-shadow: 0 0 20px rgba(255, 0, 255, 1), 0 0 30px rgba(255, 0, 255, 0.5);
 }
 
 .neon-logo {
@@ -27,6 +40,7 @@
     color: #00f3ff;
     text-shadow: 0 0 10px rgba(0, 243, 255, 0.8);
     margin: 0;
+    transition: all 0.3s ease;
 }
 
 .flow-text {

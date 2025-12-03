@@ -10,9 +10,9 @@ function Sidebar() {
 
     return (
         <div className="sidebar">
-            <div className="logo-container">
+            <Link to="/" className="logo-container">
                 <h1 className="neon-logo">AUTO<span className="flow-text">FLOW</span></h1>
-            </div>
+            </Link>
 
             <nav className="nav-menu">
                 <Link to="/" className={`nav-item ${isActive('/') ? 'active' : ''}`}>
