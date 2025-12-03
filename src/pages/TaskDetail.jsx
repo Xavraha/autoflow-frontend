@@ -108,13 +108,16 @@ function TaskDetail() {
             const updatedTasks = [...job.tasks];
             updatedTasks[0].steps.splice(stepIndex, 1);
 
+            // Solo enviar las tareas actualizadas, no todo el job
             const response = await fetch(`${API_URL}/api/jobs/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...job, tasks: updatedTasks })
+                body: JSON.stringify({ tasks: updatedTasks })
             });
 
             if (!response.ok) {
+                const errorData = await response.text();
+                console.error('Response error:', errorData);
                 throw new Error('Error en la respuesta del servidor');
             }
 
@@ -158,25 +161,26 @@ function TaskDetail() {
 
             if (isVideoFile) {
                 step.video_url = uploadData.url;
+                step.photo_before = null;
+                step.photo_after = null;
             } else {
-                // Si ya hay photo_before, usar photo_after
-                if (step.photo_before) {
-                    console.log('Añadiendo como photo_after');
-                    step.photo_after = uploadData.url;
-                } else {
-                    console.log('Añadiendo como photo_before');
-                    step.photo_before = uploadData.url;
-                }
+                // Solo una imagen por paso
+                console.log('Añadiendo como photo_before');
+                step.photo_before = uploadData.url;
+                step.photo_after = null;
+                step.video_url = null;
             }
 
             console.log('Actualizando job con nueva media...');
             const updateRes = await fetch(`${API_URL}/api/jobs/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...job, tasks: updatedTasks })
+                body: JSON.stringify({ tasks: updatedTasks })
             });
 
             if (!updateRes.ok) {
+                const errorData = await updateRes.text();
+                console.error('Update error:', errorData);
                 throw new Error('Error al actualizar el job');
             }
 
@@ -389,20 +393,22 @@ function TaskDetail() {
                                             </div>
                                         )}
 
-                                        {/* Botón de Subida Integrado */}
-                                        <div className="gallery-item" style={{ border: '2px dashed #00f3ff', background: 'rgba(0, 243, 255, 0.05)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                            <input
-                                                type="file"
-                                                id={`upload-${index}`}
-                                                style={{ display: 'none' }}
-                                                accept="image/*,video/*"
-                                                onChange={(e) => handleUploadPhoto(index, e.target.files[0])}
-                                            />
-                                            <label htmlFor={`upload-${index}`} style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#00f3ff' }}>
-                                                <FaCamera size={24} style={{ marginBottom: '5px' }} />
-                                                <span style={{ fontSize: '0.7rem', fontWeight: 'bold' }}>SUBIR</span>
-                                            </label>
-                                        </div>
+                                        {/* Botón de Subida - Solo si NO hay media */}
+                                        {!step.photo_before && !step.video_url && (
+                                            <div className="gallery-item" style={{ border: '2px dashed #00f3ff', background: 'rgba(0, 243, 255, 0.05)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                                <input
+                                                    type="file"
+                                                    id={`upload-${index}`}
+                                                    style={{ display: 'none' }}
+                                                    accept="image/*,video/*"
+                                                    onChange={(e) => handleUploadPhoto(index, e.target.files[0])}
+                                                />
+                                                <label htmlFor={`upload-${index}`} style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#00f3ff' }}>
+                                                    <FaCamera size={24} style={{ marginBottom: '5px' }} />
+                                                    <span style={{ fontSize: '0.7rem', fontWeight: 'bold' }}>SUBIR</span>
+                                                </label>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
