@@ -16,4 +16,31 @@
     overflow-y: auto;
     background: radial-gradient(circle at 50% 50%, #111 0%, #050505 100%);
     /* Subtle vignette */
+    min-height: 100vh;
+}
+
+/* Responsive Layout */
+@media (max-width: 1024px) {
+    .main-content {
+        margin-left: 200px;
+        padding: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 80px;
+        /* Coincide con sidebar colapsada */
+        padding: 15px;
+        width: calc(100% - 80px);
+        /* Asegurar ancho correcto */
+    }
+}
+
+@media (max-width: 480px) {
+    .main-content {
+        margin-left: 70px;
+        padding: 10px;
+        width: calc(100% - 70px);
+    }
 }

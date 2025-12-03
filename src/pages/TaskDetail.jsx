@@ -1,30 +1,27 @@
 // src/pages/TaskDetail.jsx
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaArrowLeft, FaPlus, FaTrash, FaCheckCircle, FaCamera, FaTimes, FaVideo } from 'react-icons/fa';
+import { FaArrowLeft, FaCheckCircle, FaTrash, FaPlus, FaCloudUploadAlt, FaVideo, FaImage } from 'react-icons/fa';
 import { API_URL } from '../apiConfig';
 import './TaskDetail.css';
 
 const STATUS_LABELS = {
-    pending_diagnosis: "DIAGNÓSTICO PENDIENTE",
-    awaiting_parts: "EN ESPERA DE PIEZAS",
-    in_progress: "EN PROGRESO",
-    completed: "COMPLETADO",
-    canceled: "CANCELADO"
+    pending_diagnosis: 'DIAGNÓSTICO PENDIENTE',
+    awaiting_parts: 'EN ESPERA DE PIEZAS',
+    in_progress: 'EN PROGRESO',
+    completed: 'COMPLETADO',
+    cancelled: 'CANCELADO'
 };
 
 function TaskDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
-
-    // Estados de datos
     const [job, setJob] = useState(null);
     const [customer, setCustomer] = useState(null);
     const [loading, setLoading] = useState(true);
-
-    // Estados de UI
     const [showAddStepModal, setShowAddStepModal] = useState(false);
     const [newStepData, setNewStepData] = useState({ name: '', comment: '' });
+    const [uploading, setUploading] = useState(false);
 
     // Cargar datos
     useEffect(() => {
@@ -55,16 +52,24 @@ function TaskDetail() {
     // Actualizar Estado General
     const handleStatusChange = async (newStatus) => {
         try {
-            // Actualización optimista para rapidez visual
+            console.log('Updating status to:', newStatus);
+            // Actualización optimista
             setJob({ ...job, status: newStatus });
-            await fetch(`${API_URL}/api/jobs/${id}`, {
-                method: 'PUT',
+
+            // Usar endpoint específico para estado
+            const response = await fetch(`${API_URL}/api/jobs/${id}/status`, {
+                method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...job, status: newStatus })
+                body: JSON.stringify({ status: newStatus })
             });
+
+            if (!response.ok) {
+                throw new Error('Error al actualizar estado');
+            }
         } catch (error) {
             console.error('Error updating status:', error);
-            fetchJobDetails(); // Revertir si falla
+            alert('Error al actualizar estado');
+            fetchJobDetails(false); // Revertir si falla
         }
     };
 
@@ -120,11 +125,10 @@ function TaskDetail() {
             const updatedTasks = [...job.tasks];
             updatedTasks[0].steps.splice(stepIndex, 1);
 
-            // Solo enviar las tareas actualizadas, no todo el job
             const response = await fetch(`${API_URL}/api/jobs/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ tasks: updatedTasks })
+                body: JSON.stringify({ tasks: updatedTasks }) // Only sending tasks
             });
 
             if (!response.ok) {
@@ -142,80 +146,87 @@ function TaskDetail() {
         }
     };
 
-    const handleUploadPhoto = async (stepIndex, file, photoType = 'photo_before') => {
+    // --- FUNCIONES DE ARCHIVOS (Cloudinary) ---
+
+    const handleUploadPhoto = async (stepIndex, file) => {
         if (!file) return;
+
+        const isVideo = file.type.startsWith('video/');
+        const isImage = file.type.startsWith('image/');
+
+        if (!isVideo && !isImage) {
+            return alert('Solo se permiten imágenes o videos');
+        }
+
         const formData = new FormData();
         formData.append('file', file);
+        formData.append('upload_preset', 'autoflow_preset'); // Reemplaza con tu preset real
 
         try {
-            console.log('Subiendo archivo:', file.name, file.type);
+            setUploading(true);
+            console.log('Subiendo archivo a Cloudinary:', file.name);
 
-            // 1. Subir a Cloudinary
-            const uploadRes = await fetch(`${API_URL}/api/upload`, {
+            const res = await fetch('https://api.cloudinary.com/v1_1/dbwolldlx/upload', { // Reemplaza con tu cloud name
                 method: 'POST',
-                body: formData,
+                body: formData
             });
-            const uploadData = await uploadRes.json();
 
-            if (!uploadRes.ok) {
-                throw new Error(uploadData.error || 'Error uploading');
-            }
+            if (!res.ok) throw new Error('Error subiendo a Cloudinary');
 
-            console.log('Archivo subido a Cloudinary:', uploadData.url);
+            const data = await res.json();
+            console.log('Archivo subido a Cloudinary:', data.secure_url);
 
-            // 2. Actualizar el paso con la URL
+            // Actualizar el paso con la URL
             const updatedTasks = [...job.tasks];
             const step = updatedTasks[0].steps[stepIndex];
 
-            // Determinar si es video o imagen
-            const isVideoFile = file.type.startsWith('video/');
-            console.log('Es video?', isVideoFile);
+            console.log('Es video?', isVideo);
 
-            if (isVideoFile) {
-                step.video_url = uploadData.url;
-                step.photo_before = null;
+            if (isVideo) {
+                step.video_url = data.secure_url;
+                step.photo_before = null; // Limpiar imagen si sube video
                 step.photo_after = null;
+                console.log('Añadiendo como video_url');
             } else {
-                // Solo una imagen por paso
-                console.log('Añadiendo como photo_before');
-                step.photo_before = uploadData.url;
+                step.photo_before = data.secure_url;
+                step.video_url = null; // Limpiar video si sube imagen
                 step.photo_after = null;
-                step.video_url = null;
+                console.log('Añadiendo como photo_before');
             }
 
             console.log('Actualizando job con nueva media...');
+
+            // Guardar en backend
             const updateRes = await fetch(`${API_URL}/api/jobs/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ tasks: updatedTasks })
+                body: JSON.stringify({ tasks: updatedTasks }) // Only sending tasks
             });
 
-            if (!updateRes.ok) {
-                const errorData = await updateRes.text();
-                console.error('Update error:', errorData);
-                throw new Error('Error al actualizar el job');
-            }
+            if (!updateRes.ok) throw new Error('Error actualizando base de datos');
 
             console.log('Job actualizado, recargando datos...');
             await fetchJobDetails(false);
             alert('Archivo subido exitosamente');
         } catch (error) {
             console.error('Error uploading photo:', error);
-            alert('Error al subir archivo: ' + error.message);
+            alert('Error al subir archivo');
+        } finally {
+            setUploading(false);
         }
     };
 
-    const handleDeletePhoto = async (stepIndex, photoType) => {
+    const handleDeletePhoto = async (stepIndex, field) => {
         if (!window.confirm('¿Eliminar este archivo?')) return;
 
         try {
             const updatedTasks = [...job.tasks];
-            updatedTasks[0].steps[stepIndex][photoType] = null;
+            updatedTasks[0].steps[stepIndex][field] = null;
 
             await fetch(`${API_URL}/api/jobs/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...job, tasks: updatedTasks })
+                body: JSON.stringify({ tasks: updatedTasks }) // Only sending tasks
             });
 
             await fetchJobDetails(false);
@@ -224,28 +235,21 @@ function TaskDetail() {
         }
     };
 
-    if (loading) return <div className="task-detail-view" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}><h2>CARGANDO SISTEMA...</h2></div>;
-    if (!job) return <div className="task-detail-view"><h2>ERROR: TRABAJO NO ENCONTRADO</h2></div>;
-    if (!job.tasks || job.tasks.length === 0) return <div className="task-detail-view"><h2>ERROR: NO HAY TAREAS ASOCIADAS</h2></div>;
 
-    // Obtener los pasos de la primera tarea
-    const currentTask = job.tasks[0];
-    const steps = currentTask.steps || [];
+    if (loading) return <div className="loading-screen">CARGANDO SISTEMA...</div>;
+    if (!job) return <div className="error-screen">TAREA NO ENCONTRADA</div>;
 
-    // Helpers para UI
-    const isVideo = (url) => url && url.match(/\.(mp4|webm|mov)$/i);
+    const steps = job.tasks?.[0]?.steps || [];
 
     return (
-        <div className="task-detail-view">
+        <div className="task-detail-container">
             {/* Header */}
-            <div className="detail-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <button className="back-btn" onClick={() => navigate(-1)}>
+            <div className="task-header">
+                <button className="back-btn" onClick={() => navigate('/')}>
                     <FaArrowLeft /> VOLVER
                 </button>
-                {/* Botón Principal para Activar Modal */}
                 <button
                     className="add-step-btn"
-                    style={{ width: 'auto', padding: '0.8rem 1.5rem' }}
                     onClick={() => setShowAddStepModal(true)}
                 >
                     <FaPlus /> NUEVO PASO
@@ -314,9 +318,7 @@ function TaskDetail() {
                 <div className="action-console">
                     <div className="vehicle-header">
                         <h2 style={{ color: '#d900ff' }}>SECCIÓN 2: PROCESO TÉCNICO</h2>
-                        <p style={{ fontSize: '0.9rem', color: '#888', marginTop: '0.5rem' }}>
-                            Tarea: {currentTask.title}
-                        </p>
+                        <p style={{ color: '#888', marginTop: '0.5rem' }}>Tarea: {job.tasks?.[0]?.description}</p>
                     </div>
 
                     <div className="steps-list">
@@ -344,80 +346,58 @@ function TaskDetail() {
                                     </div>
                                 )}
 
-                                {/* Galería Multimedia del Paso */}
-                                <div className="media-gallery" style={{ marginTop: '1rem' }}>
-                                    <h5>EVIDENCIA MULTIMEDIA</h5>
-                                    <div className="gallery-grid">
-                                        {/* Foto ANTES */}
+                                <div className="step-media-gallery">
+                                    <p style={{ color: '#666', fontSize: '0.8rem', marginBottom: '0.5rem' }}>EVIDENCIA MULTIMEDIA</p>
+
+                                    <div className="media-grid">
+                                        {/* Mostrar Imagen */}
                                         {step.photo_before && (
-                                            <div className="gallery-item">
-                                                <img src={step.photo_before} alt="Antes" onClick={() => window.open(step.photo_before, '_blank')} style={{ cursor: 'pointer' }} />
-                                                <span style={{ position: 'absolute', bottom: '5px', left: '5px', background: 'rgba(0,0,0,0.7)', padding: '2px 6px', fontSize: '0.7rem', borderRadius: '3px' }}>ANTES</span>
+                                            <div className="media-item">
+                                                <img src={step.photo_before} alt="Evidencia" />
+                                                <span className="media-tag">ANTES</span>
                                                 <button
+                                                    className="delete-media-btn"
                                                     onClick={() => handleDeletePhoto(index, 'photo_before')}
-                                                    style={{
-                                                        position: 'absolute', top: '5px', right: '5px',
-                                                        background: 'rgba(255, 0, 85, 0.8)', border: 'none', borderRadius: '50%',
-                                                        width: '25px', height: '25px', display: 'flex',
-                                                        alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'white'
-                                                    }}
                                                 >
-                                                    <FaTimes size={12} />
+                                                    <FaTrash />
                                                 </button>
                                             </div>
                                         )}
 
-                                        {/* Foto DESPUÉS */}
-                                        {step.photo_after && (
-                                            <div className="gallery-item">
-                                                <img src={step.photo_after} alt="Después" onClick={() => window.open(step.photo_after, '_blank')} style={{ cursor: 'pointer' }} />
-                                                <span style={{ position: 'absolute', bottom: '5px', left: '5px', background: 'rgba(0,0,0,0.7)', padding: '2px 6px', fontSize: '0.7rem', borderRadius: '3px' }}>DESPUÉS</span>
-                                                <button
-                                                    onClick={() => handleDeletePhoto(index, 'photo_after')}
-                                                    style={{
-                                                        position: 'absolute', top: '5px', right: '5px',
-                                                        background: 'rgba(255, 0, 85, 0.8)', border: 'none', borderRadius: '50%',
-                                                        width: '25px', height: '25px', display: 'flex',
-                                                        alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'white'
-                                                    }}
-                                                >
-                                                    <FaTimes size={12} />
-                                                </button>
-                                            </div>
-                                        )}
-
-                                        {/* Video */}
+                                        {/* Mostrar Video */}
                                         {step.video_url && (
-                                            <div className="gallery-item">
-                                                <video src={step.video_url} controls style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                                <span style={{ position: 'absolute', bottom: '5px', left: '5px', background: 'rgba(0,0,0,0.7)', padding: '2px 6px', fontSize: '0.7rem', borderRadius: '3px' }}>VIDEO</span>
+                                            <div className="media-item video">
+                                                <video controls src={step.video_url}></video>
+                                                <span className="media-tag video">VIDEO</span>
                                                 <button
+                                                    className="delete-media-btn"
                                                     onClick={() => handleDeletePhoto(index, 'video_url')}
-                                                    style={{
-                                                        position: 'absolute', top: '5px', right: '5px',
-                                                        background: 'rgba(255, 0, 85, 0.8)', border: 'none', borderRadius: '50%',
-                                                        width: '25px', height: '25px', display: 'flex',
-                                                        alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'white'
-                                                    }}
                                                 >
-                                                    <FaTimes size={12} />
+                                                    <FaTrash />
                                                 </button>
                                             </div>
                                         )}
 
-                                        {/* Botón de Subida - Solo si NO hay media */}
+                                        {/* Botón de Subir (Solo si no hay media) */}
                                         {!step.photo_before && !step.video_url && (
-                                            <div className="gallery-item" style={{ border: '2px dashed #00f3ff', background: 'rgba(0, 243, 255, 0.05)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                            <div className="upload-placeholder">
                                                 <input
                                                     type="file"
-                                                    id={`upload-${index}`}
+                                                    id={`file-${index}`}
                                                     style={{ display: 'none' }}
                                                     accept="image/*,video/*"
                                                     onChange={(e) => handleUploadPhoto(index, e.target.files[0])}
+                                                    disabled={uploading}
                                                 />
-                                                <label htmlFor={`upload-${index}`} style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#00f3ff' }}>
-                                                    <FaCamera size={24} style={{ marginBottom: '5px' }} />
-                                                    <span style={{ fontSize: '0.7rem', fontWeight: 'bold' }}>SUBIR</span>
+                                                <label htmlFor={`file-${index}`} className="upload-btn">
+                                                    {uploading ? (
+                                                        <span>Subiendo...</span>
+                                                    ) : (
+                                                        <>
+                                                            <FaCloudUploadAlt size={24} />
+                                                            <span>SUBIR</span>
+                                                        </>
+                                                    )}
                                                 </label>
                                             </div>
                                         )}
@@ -429,7 +409,7 @@ function TaskDetail() {
                 </div>
             </div>
 
-            {/* --- MODAL FLOTANTE (Recuperado y Estilizado) --- */}
+            {/* Modal Nuevo Paso */}
             {showAddStepModal && (
                 <div className="modal-overlay" onClick={() => setShowAddStepModal(false)}>
                     <div className="modal-content" onClick={e => e.stopPropagation()}>
@@ -446,6 +426,7 @@ function TaskDetail() {
                                 autoFocus
                             />
                         </div>
+
                         <div style={{ marginBottom: '2rem' }}>
                             <label style={{ display: 'block', color: '#aaa', marginBottom: '0.5rem', fontSize: '0.8rem' }}>COMENTARIO (Opcional)</label>
                             <textarea
@@ -456,6 +437,7 @@ function TaskDetail() {
                                 style={{ width: '100%', padding: '10px', background: '#0a0a15', border: '1px solid #333', color: '#fff', borderRadius: '4px', resize: 'vertical' }}
                             />
                         </div>
+
                         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
                             <button
                                 onClick={() => setShowAddStepModal(false)}
