@@ -104,7 +104,9 @@ function TaskDetail() {
             console.log('Paso creado exitosamente:', result);
 
             // Recargar datos para mostrar el nuevo paso
+            console.log('Recargando datos del job...');
             await fetchJobDetails();
+            console.log('Datos recargados, cerrando modal...');
             setNewStepData({ name: '', comment: '' });
             setShowAddStepModal(false);
             alert('Paso creado exitosamente');
