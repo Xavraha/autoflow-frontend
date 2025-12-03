@@ -1,36 +1,29 @@
-// src/pages/TaskDetail.jsx
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaArrowLeft, FaPlus, FaTrash, FaCheckCircle } from 'react-icons/fa';
+import { FaArrowLeft, FaPlus, FaTrash, FaCheckCircle, FaCamera, FaTimes } from 'react-icons/fa';
 import { API_URL } from '../apiConfig';
 import './TaskDetail.css';
-
-const STATUS_LABELS = {
-    pending_diagnosis: "DIAGNÓSTICO PENDIENTE",
-    awaiting_parts: "EN ESPERA DE PIEZAS",
-    in_progress: "EN PROGRESO",
-    completed: "COMPLETADO",
-    canceled: "CANCELADO"
-};
 
 function TaskDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
+
     const [job, setJob] = useState(null);
     const [customer, setCustomer] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    // Estado para el modal de agregar paso
+    const [showAddStepModal, setShowAddStepModal] = useState(false);
+    const [newStepData, setNewStepData] = useState({ name: '', comment: '' });
+
+    // Cargar datos al iniciar
     useEffect(() => {
         fetchJobDetails();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     const fetchJobDetails = async () => {
         try {
             setLoading(true);
-            setJob(null);
-            setCustomer(null);
-
             const jobResponse = await fetch(`${API_URL}/api/jobs/${id}`);
             const jobData = await jobResponse.json();
             setJob(jobData);
@@ -42,28 +35,59 @@ function TaskDetail() {
                 setCustomer(foundCustomer);
             }
         } catch (error) {
-            console.error('Error fetching job details:', error);
+            console.error('Error fetching details:', error);
         } finally {
             setLoading(false);
         }
     };
 
+    // Actualizar Estado General (Pending, In Progress, etc.)
     const handleStatusChange = async (newStatus) => {
+        try {
+            const updatedJob = { ...job, status: newStatus };
+            setJob(updatedJob); // Actualización optimista
+            await fetch(`${API_URL}/api/jobs/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedJob)
+            });
+        } catch (error) {
+            console.error('Error updating status:', error);
+            fetchJobDetails(); // Revertir si falla
+        }
+    };
+
+    // --- LÓGICA DE PASOS ---
+
+    // 1. Agregar Paso Nuevo
+    const handleAddStep = async () => {
+        if (!newStepData.name.trim()) return alert('El nombre del paso es requerido');
+
+        const newStep = {
+            name: newStepData.name,
+            comment: newStepData.comment || '',
+            photos: []
+        };
+        const updatedSteps = [...(job.taskSteps || []), newStep];
+
         try {
             await fetch(`${API_URL}/api/jobs/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...job, status: newStatus })
+                body: JSON.stringify({ ...job, taskSteps: updatedSteps })
             });
-            setJob({ ...job, status: newStatus });
+            setJob({ ...job, taskSteps: updatedSteps });
+            setNewStepData({ name: '', comment: '' });
+            setShowAddStepModal(false);
         } catch (error) {
-            console.error('Error updating status:', error);
+            console.error('Error adding step:', error);
+            alert('Error al guardar el paso');
         }
     };
 
+    // 2. Borrar Paso
     const handleDeleteStep = async (stepIndex) => {
-        if (!window.confirm('¿Eliminar este paso?')) return;
-
+        if (!window.confirm('¿Eliminar este paso completo?')) return;
         const updatedSteps = job.taskSteps.filter((_, i) => i !== stepIndex);
         try {
             await fetch(`${API_URL}/api/jobs/${id}`, {
@@ -77,28 +101,25 @@ function TaskDetail() {
         }
     };
 
+    // 3. Subir Foto/Video a un Paso
     const handleUploadPhoto = async (stepIndex, file) => {
         if (!file) return;
-
         const formData = new FormData();
         formData.append('file', file);
 
         try {
+            // Subir a Cloudinary
             const uploadRes = await fetch(`${API_URL}/api/upload`, {
                 method: 'POST',
                 body: formData,
             });
             const uploadData = await uploadRes.json();
+            if (!uploadRes.ok) throw new Error(uploadData.error || 'Error uploading');
 
-            if (!uploadRes.ok) {
-                throw new Error(uploadData.error || 'Error uploading to Cloudinary');
-            }
-
-            // Add photo to the step
+            // Actualizar DB
             const updatedSteps = [...job.taskSteps];
-            if (!updatedSteps[stepIndex].photos) {
-                updatedSteps[stepIndex].photos = [];
-            }
+            if (!updatedSteps[stepIndex].photos) updatedSteps[stepIndex].photos = [];
+
             updatedSteps[stepIndex].photos.push({
                 url: uploadData.url,
                 label: file.name,
@@ -110,18 +131,17 @@ function TaskDetail() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ...job, taskSteps: updatedSteps })
             });
-
             setJob({ ...job, taskSteps: updatedSteps });
-            alert('¡Archivo subido exitosamente!');
+            alert('Archivo subido correctamente');
         } catch (error) {
-            console.error('Error uploading photo:', error);
-            alert(`Error al subir archivo: ${error.message}`);
+            console.error('Error uploading:', error);
+            alert('Error al subir archivo');
         }
     };
 
+    // 4. Borrar Foto de un Paso
     const handleDeletePhoto = async (stepIndex, photoIndex) => {
-        if (!window.confirm('¿Eliminar esta foto/video?')) return;
-
+        if (!window.confirm('¿Eliminar este archivo?')) return;
         const updatedSteps = [...job.taskSteps];
         updatedSteps[stepIndex].photos.splice(photoIndex, 1);
 
@@ -137,113 +157,67 @@ function TaskDetail() {
         }
     };
 
-    if (loading) return <div className="loading">Cargando...</div>;
-    if (!job) return <div className="error">Trabajo no encontrado</div>;
+    if (loading) return <div className="task-detail-view" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}><h2>CARGANDO DATOS...</h2></div>;
+    if (!job) return <div className="task-detail-view"><h2>TRABAJO NO ENCONTRADO</h2></div>;
 
-    const progressSteps = [
-        { label: 'RECEPCIÓN', status: 'completed' },
-        { label: 'DIAGNÓSTICO', status: job.status === 'pending_diagnosis' ? 'active' : 'completed' },
-        { label: 'REPARACIÓN', status: job.status === 'in_progress' ? 'active' : job.status === 'completed' ? 'completed' : 'pending' },
-        { label: 'CONTROL CALIDAD', status: job.status === 'completed' ? 'completed' : 'pending' }
-    ];
+    // Helpers para la línea de tiempo
+    const isDiagnosis = job.status === 'pending_diagnosis';
+    const isWaiting = job.status === 'awaiting_parts';
+    const isInProgress = job.status === 'in_progress';
+    const isCompleted = job.status === 'completed';
 
     return (
         <div className="task-detail-view">
-            {/* Header con Back */}
-            <div className="detail-header">
+            {/* --- HEADER --- */}
+            <div className="detail-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <button className="back-btn" onClick={() => navigate(-1)}>
-                    <FaArrowLeft /> BACK
+                    <FaArrowLeft /> VOLVER
+                </button>
+                {/* Botón Principal para Añadir Tarea */}
+                <button className="add-step-main-btn" onClick={() => setShowAddStepModal(true)}>
+                    <FaPlus /> AÑADIR PASO
                 </button>
             </div>
 
             <div className="detail-layout">
-                {/* Left Panel - Vehicle Status */}
+
+                {/* --- PANEL IZQUIERDO (Info y Status) --- */}
                 <div className="left-panel">
-                    {/* Vehicle Header */}
-                    <div className="vehicle-header">
-                        <h2>ESTADO DEL VEHÍCULO</h2>
-                    </div>
 
                     {/* Status List */}
                     <div className="status-list-section">
                         <h3>STATUS LIST</h3>
                         <div className="status-badges">
-                            <button
-                                className={`status-badge ${job.status === 'pending_diagnosis' ? 'active' : ''}`}
-                                onClick={() => handleStatusChange('pending_diagnosis')}
-                            >
-                                DIAGNÓSTICO PENDIENTE
-                            </button>
-                            <button
-                                className={`status-badge ${job.status === 'awaiting_parts' ? 'active' : ''}`}
-                                onClick={() => handleStatusChange('awaiting_parts')}
-                            >
-                                EN ESPERA DE PIEZAS
-                            </button>
-                            <button
-                                className={`status-badge ${job.status === 'in_progress' ? 'active' : ''}`}
-                                onClick={() => handleStatusChange('in_progress')}
-                            >
-                                EN PROGRESO
-                            </button>
-                            <button
-                                className={`status-badge ${job.status === 'completed' ? 'active' : ''}`}
-                                onClick={() => handleStatusChange('completed')}
-                            >
-                                COMPLETADO
-                            </button>
-                            <button
-                                className={`status-badge ${job.status === 'canceled' ? 'active' : ''}`}
-                                onClick={() => handleStatusChange('canceled')}
-                            >
-                                CANCELADO
-                            </button>
+                            {['pending_diagnosis', 'awaiting_parts', 'in_progress', 'completed', 'canceled'].map(st => (
+                                <button
+                                    key={st}
+                                    className={`status-badge ${job.status === st ? 'active' : ''}`}
+                                    onClick={() => handleStatusChange(st)}
+                                >
+                                    {st.replace('_', ' ')}
+                                </button>
+                            ))}
                         </div>
                     </div>
 
-                    {/* Section 2 - Vehicle Image */}
-                    <div className="section-2">
-                        <h3>SECTION 2</h3>
-                        <div className="vehicle-showcase">
-                            <div className="vehicle-stats">
-                                <div className="stat-item">
-                                    <span className="stat-label">Battery Level:</span>
-                                    <span className="stat-value">75%</span>
-                                </div>
-                                <div className="stat-item">
-                                    <span className="stat-label">Engine Status:</span>
-                                    <span className="stat-value">210 bar</span>
-                                </div>
-                                <div className="stat-item">
-                                    <span className="stat-label">Hydraulic Status:</span>
-                                    <span className="stat-value">Normal</span>
-                                </div>
-                            </div>
-                            <div className="vehicle-visual">
-                                {/* Placeholder for vehicle image */}
-                                <div className="vehicle-placeholder">
-                                    <span>CYBERTRUCK</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Progress Timeline */}
+                    {/* Progress Timeline Visual */}
                     <div className="progress-timeline">
                         <h3>PROGRESS TIMELINE</h3>
                         <div className="timeline-steps">
-                            {progressSteps.map((step, index) => (
-                                <div key={index} className="timeline-step">
-                                    <div className={`step-icon ${step.status}`}>
-                                        {step.status === 'completed' && <FaCheckCircle />}
-                                        {step.status === 'active' && <div className="pulse-ring"></div>}
-                                        {step.status === 'pending' && <div className="pending-circle"></div>}
-                                    </div>
-                                    <div className="step-label">{step.label}</div>
-                                    {step.status === 'active' && <div className="completion-percent">65% COMPLETE</div>}
-                                    {index < progressSteps.length - 1 && <div className="step-connector"></div>}
-                                </div>
-                            ))}
+                            <div className={`timeline-step`}>
+                                <div className={`step-icon ${isDiagnosis || isWaiting || isInProgress || isCompleted ? 'completed' : 'pending'}`}><FaCheckCircle /></div>
+                                <div className="step-label">DIAGNÓSTICO</div>
+                                <div className="step-connector"></div>
+                            </div>
+                            <div className={`timeline-step`}>
+                                <div className={`step-icon ${isInProgress || isCompleted ? 'completed' : 'pending'}`}><FaCheckCircle /></div>
+                                <div className="step-label">REPARACIÓN</div>
+                                <div className="step-connector"></div>
+                            </div>
+                            <div className={`timeline-step`}>
+                                <div className={`step-icon ${isCompleted ? 'completed' : 'pending'}`}><FaCheckCircle /></div>
+                                <div className="step-label">CALIDAD</div>
+                            </div>
                         </div>
                     </div>
 
@@ -251,148 +225,129 @@ function TaskDetail() {
                     <div className="vehicle-info-grid">
                         <h3>INFORMACIÓN DEL VEHÍCULO</h3>
                         <div className="info-grid">
-                            <div className="info-item">
-                                <span className="info-label">MARCA:</span>
-                                <span className="info-value">{job.vehicleInfo?.make || 'N/A'}</span>
-                            </div>
-                            <div className="info-item">
-                                <span className="info-label">VIN:</span>
-                                <span className="info-value">{job.vehicleInfo?.vin || 'N/A'}</span>
-                            </div>
-                            <div className="info-item">
-                                <span className="info-label">BODY:</span>
-                                <span className="info-value">{job.vehicleInfo?.bodyClass || 'N/A'}</span>
-                            </div>
-                            <div className="info-item">
-                                <span className="info-label">MODELO:</span>
-                                <span className="info-value">{job.vehicleInfo?.model || 'N/A'}</span>
-                            </div>
-                            <div className="info-item">
-                                <span className="info-label">TRIM:</span>
-                                <span className="info-value">{job.vehicleInfo?.trim || 'N/A'}</span>
-                            </div>
-                            <div className="info-item">
-                                <span className="info-label">CYL:</span>
-                                <span className="info-value">N/A</span>
-                            </div>
-                            <div className="info-item">
-                                <span className="info-label">AÑO:</span>
-                                <span className="info-value">{job.vehicleInfo?.year || 'N/A'}</span>
-                            </div>
-                            <div className="info-item">
-                                <span className="info-label">COLOR:</span>
-                                <span className="info-value">{job.vehicleInfo?.color || 'N/A'}</span>
-                            </div>
-                            <div className="info-item">
-                                <span className="info-label">FUEL:</span>
-                                <span className="info-value">{job.vehicleInfo?.fuelType || 'N/A'}</span>
-                            </div>
+                            <div className="info-item"><span className="info-label">MARCA:</span><span className="info-value">{job.vehicleInfo?.make}</span></div>
+                            <div className="info-item"><span className="info-label">MODELO:</span><span className="info-value">{job.vehicleInfo?.model}</span></div>
+                            <div className="info-item"><span className="info-label">AÑO:</span><span className="info-value">{job.vehicleInfo?.year}</span></div>
+                            <div className="info-item"><span className="info-label">VIN:</span><span className="info-value">{job.vehicleInfo?.vin || 'N/A'}</span></div>
+                            <div className="info-item"><span className="info-label">CLIENTE:</span><span className="info-value">{customer?.name || 'N/A'}</span></div>
+                            <div className="info-item"><span className="info-label">MOTOR:</span><span className="info-value">{job.vehicleInfo?.engineCylinders ? `${job.vehicleInfo.engineCylinders} Cyl` : 'N/A'}</span></div>
                         </div>
                     </div>
                 </div>
 
-                {/* Right Panel - Action Console */}
+                {/* --- PANEL DERECHO (SECCIÓN 2 - Pasos/Acciones) --- */}
                 <div className="action-console">
-                    <h2>CONSOLA DE ACCIÓN</h2>
+                    <div className="vehicle-header">
+                        <h2>SECCIÓN 2: {job.vehicleInfo?.model || 'VEHÍCULO'}</h2>
+                    </div>
 
                     <div className="steps-list">
+                        {(!job.taskSteps || job.taskSteps.length === 0) && (
+                            <p style={{ textAlign: 'center', color: '#666', marginTop: '20px' }}>
+                                No hay pasos registrados. Usa el botón "AÑADIR PASO" para comenzar.
+                            </p>
+                        )}
+
                         {job.taskSteps && job.taskSteps.map((step, index) => (
                             <div key={index} className="action-step">
                                 <div className="step-header">
-                                    <h3>STEP {index + 1}</h3>
+                                    <h3>PASO #{index + 1}</h3>
                                     <button className="delete-step-btn" onClick={() => handleDeleteStep(index)}>
-                                        <FaTrash /> DELETE STEP
+                                        <FaTrash /> ELIMINAR
                                     </button>
                                 </div>
                                 <h4>{step.name}</h4>
 
-                                {/* Upload Section */}
-                                <div className="upload-section" style={{ marginTop: '15px', marginBottom: '15px' }}>
-                                    <input
-                                        type="file"
-                                        id={`file-upload-${index}`}
-                                        accept="image/*,video/*"
-                                        style={{ display: 'none' }}
-                                        onChange={(e) => {
-                                            if (e.target.files[0]) {
-                                                handleUploadPhoto(index, e.target.files[0]);
-                                                e.target.value = ''; // Reset input
-                                            }
-                                        }}
-                                    />
-                                    <label
-                                        htmlFor={`file-upload-${index}`}
-                                        className="upload-btn"
-                                        style={{
-                                            display: 'inline-block',
-                                            padding: '10px 20px',
-                                            background: 'linear-gradient(135deg, #00f2ff, #0066ff)',
-                                            color: '#000',
-                                            fontWeight: 'bold',
-                                            borderRadius: '5px',
-                                            cursor: 'pointer',
-                                            border: 'none',
-                                            transition: 'all 0.3s'
-                                        }}
-                                    >
-                                        <FaPlus /> UPLOAD PHOTO/VIDEO
-                                    </label>
-                                </div>
-
-                                {step.photos && step.photos.length > 0 && (
-                                    <div className="media-gallery">
-                                        <h5>MEDIA GALLERY</h5>
-                                        <div className="gallery-grid">
-                                            {step.photos.map((photo, photoIndex) => (
-                                                <div key={photoIndex} className="gallery-item" style={{ position: 'relative' }}>
-                                                    {photo.url.includes('.mp4') || photo.url.includes('.mov') || photo.url.includes('.webm') ? (
-                                                        <video src={photo.url} controls style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                                    ) : (
-                                                        <img src={photo.url} alt={photo.label} />
-                                                    )}
-                                                    <span className="photo-label">{photo.label}</span>
-                                                    <button
-                                                        onClick={() => handleDeletePhoto(index, photoIndex)}
-                                                        style={{
-                                                            position: 'absolute',
-                                                            top: '5px',
-                                                            right: '5px',
-                                                            background: '#ff0066',
-                                                            border: 'none',
-                                                            borderRadius: '50%',
-                                                            width: '30px',
-                                                            height: '30px',
-                                                            cursor: 'pointer',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            color: '#fff',
-                                                            fontSize: '16px'
-                                                        }}
-                                                    >
-                                                        <FaTrash />
-                                                    </button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-
                                 {step.comment && (
                                     <div className="step-comment">
-                                        <h5>TECHNICIAN'S COMMENT:</h5>
+                                        <h5>COMENTARIO TÉCNICO:</h5>
                                         <p>{step.comment}</p>
                                     </div>
                                 )}
+
+                                {/* Galería de Medios */}
+                                <div className="media-gallery">
+                                    <div className="gallery-grid">
+                                        {/* Fotos existentes */}
+                                        {step.photos && step.photos.map((photo, pIndex) => (
+                                            <div key={pIndex} className="gallery-item">
+                                                {photo.url.match(/\.(mp4|webm|mov)$/i) ? (
+                                                    <video src={photo.url} controls />
+                                                ) : (
+                                                    <img src={photo.url} alt="Evidencia" onClick={() => window.open(photo.url, '_blank')} style={{ cursor: 'pointer' }} />
+                                                )}
+                                                <button
+                                                    onClick={() => handleDeletePhoto(index, pIndex)}
+                                                    style={{
+                                                        position: 'absolute', top: '5px', right: '5px',
+                                                        background: '#ff0055', border: 'none', borderRadius: '50%',
+                                                        width: '25px', height: '25px', display: 'flex',
+                                                        alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'white'
+                                                    }}
+                                                >
+                                                    <FaTimes size={12} />
+                                                </button>
+                                            </div>
+                                        ))}
+
+                                        {/* Botón de Subida (Integrado en la galería) */}
+                                        <div className="gallery-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', border: '2px dashed #00f3ff', background: 'rgba(0, 243, 255, 0.05)' }}>
+                                            <input
+                                                type="file"
+                                                id={`upload-${index}`}
+                                                style={{ display: 'none' }}
+                                                accept="image/*,video/*"
+                                                onChange={(e) => handleUploadPhoto(index, e.target.files[0])}
+                                            />
+                                            <label htmlFor={`upload-${index}`} style={{ cursor: 'pointer', textAlign: 'center', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', color: '#00f3ff' }}>
+                                                <FaCamera size={24} />
+                                                <span style={{ fontSize: '0.7rem', marginTop: '5px', fontWeight: 'bold' }}>SUBIR</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         ))}
                     </div>
-
-                    <button className="add-step-btn">
-                        <FaPlus /> AÑADIR PASO
-                    </button>
                 </div>
             </div>
+
+            {/* --- MODAL PARA AÑADIR PASO --- */}
+            {showAddStepModal && (
+                <div className="modal-overlay" onClick={() => setShowAddStepModal(false)}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()}>
+                        <h3>NUEVO PASO OPERATIVO</h3>
+
+                        <div className="modal-form-group">
+                            <label>NOMBRE DEL PASO</label>
+                            <input
+                                className="modal-input"
+                                type="text"
+                                placeholder="Ej: Desmontaje de culata..."
+                                value={newStepData.name}
+                                onChange={(e) => setNewStepData({ ...newStepData, name: e.target.value })}
+                                autoFocus
+                            />
+                        </div>
+
+                        <div className="modal-form-group">
+                            <label>COMENTARIO TÉCNICO (Opcional)</label>
+                            <textarea
+                                className="modal-textarea"
+                                rows="3"
+                                placeholder="Observaciones o detalles..."
+                                value={newStepData.comment}
+                                onChange={(e) => setNewStepData({ ...newStepData, comment: e.target.value })}
+                            />
+                        </div>
+
+                        <div className="modal-actions">
+                            <button className="btn-cancel" onClick={() => setShowAddStepModal(false)}>CANCELAR</button>
+                            <button className="btn-confirm" onClick={handleAddStep}>CREAR PASO</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
