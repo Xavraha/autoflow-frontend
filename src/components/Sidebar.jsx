@@ -3,6 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { FaTachometerAlt, FaUsers, FaTasks, FaRobot, FaPlus } from 'react-icons/fa';
 import './Sidebar.css';
 
+import logoFull from '../assets/logo-full.png';
+
 function Sidebar() {
     const location = useLocation();
 
@@ -11,7 +13,7 @@ function Sidebar() {
     return (
         <div className="sidebar">
             <Link to="/" className="logo-container">
-                <img src="/src/assets/logo-full.jpg" alt="AutoFlow Logo" className="sidebar-logo-img" />
+                <img src={logoFull} alt="AutoFlow Logo" className="sidebar-logo-img" />
             </Link>
 
             <nav className="nav-menu">
