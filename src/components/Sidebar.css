@@ -143,3 +143,144 @@
     border-radius: 50%;
     border: 2px solid #000;
 }
+
+/* ==========================================
+   RESPONSIVE - MÓVIL PRO
+   ========================================== */
+
+/* Tablets y pantallas medianas */
+@media (max-width: 1024px) {
+    .sidebar {
+        width: 200px;
+    }
+
+    .neon-logo {
+        font-size: 1.5em;
+    }
+
+    .nav-item span {
+        font-size: 0.85em;
+    }
+}
+
+/* Móviles - Sidebar colapsable y profesional */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 80px;
+        padding: 15px 10px;
+        background: rgba(10, 11, 16, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-right: 1px solid rgba(0, 243, 255, 0.3);
+        box-shadow: 0 0 20px rgba(0, 243, 255, 0.15);
+    }
+
+    .logo-container {
+        margin-bottom: 30px;
+    }
+
+    .neon-logo {
+        font-size: 1.2em;
+        writing-mode: vertical-rl;
+        text-orientation: upright;
+        letter-spacing: 2px;
+    }
+
+    .flow-text {
+        display: block;
+        margin-top: 5px;
+    }
+
+    .nav-menu {
+        gap: 20px;
+        align-items: center;
+    }
+
+    .nav-item {
+        width: 100%;
+        padding: 12px;
+        justify-content: center;
+        flex-direction: column;
+        border-radius: 12px;
+        min-height: 60px;
+    }
+
+    .nav-icon {
+        margin-right: 0;
+        margin-bottom: 5px;
+        font-size: 1.4em;
+    }
+
+    .nav-item span {
+        font-size: 0.65em;
+        text-align: center;
+        letter-spacing: 0.5px;
+        line-height: 1.2;
+        max-width: 100%;
+        word-wrap: break-word;
+    }
+
+    /* Active state móvil */
+    .nav-item.active {
+        border-left: none;
+        border-bottom: 3px solid #ff00ff;
+        box-shadow: 0 4px 15px rgba(255, 0, 255, 0.3);
+    }
+
+    .nav-item:nth-child(1).active {
+        border-bottom-color: #00f3ff;
+        box-shadow: 0 4px 15px rgba(0, 243, 255, 0.3);
+    }
+
+    .nav-item:nth-child(2).active {
+        border-bottom-color: #d900ff;
+        box-shadow: 0 4px 15px rgba(217, 0, 255, 0.3);
+    }
+
+    .nav-item:nth-child(3).active {
+        border-bottom-color: #00ff00;
+        box-shadow: 0 4px 15px rgba(0, 255, 0, 0.3);
+    }
+
+    .nav-item:nth-child(4).active {
+        border-bottom-color: #0088ff;
+        box-shadow: 0 4px 15px rgba(0, 136, 255, 0.3);
+    }
+
+    .nav-item:nth-child(5).active {
+        border-bottom-color: #ff0055;
+        box-shadow: 0 4px 15px rgba(255, 0, 85, 0.3);
+    }
+
+    /* Hover en móvil */
+    .nav-item:hover {
+        background: rgba(255, 255, 255, 0.08);
+        transform: scale(1.05);
+    }
+}
+
+/* Móviles pequeños */
+@media (max-width: 480px) {
+    .sidebar {
+        width: 70px;
+        padding: 10px 5px;
+    }
+
+    .neon-logo {
+        font-size: 1em;
+    }
+
+    .nav-item {
+        padding: 10px 5px;
+        min-height: 55px;
+    }
+
+    .nav-icon {
+        font-size: 1.3em;
+        margin-bottom: 3px;
+    }
+
+    .nav-item span {
+        font-size: 0.6em;
+    }
+}

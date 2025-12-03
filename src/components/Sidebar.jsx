@@ -40,12 +40,6 @@ function Sidebar() {
                     <span>TÉCNICOS</span>
                 </Link>
             </nav>
-
-            <div className="user-profile">
-                <div className="avatar-glow">
-                    <img src="https://i.pravatar.cc/150?img=11" alt="User" />
-                </div>
-            </div>
         </div>
     );
 }
