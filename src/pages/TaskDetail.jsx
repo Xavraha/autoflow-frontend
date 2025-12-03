@@ -36,6 +36,7 @@ function TaskDetail() {
             setLoading(true);
             const jobResponse = await fetch(`${API_URL}/api/jobs/${id}`);
             const jobData = await jobResponse.json();
+            console.log('Job data loaded:', jobData); // Debug
             setJob(jobData);
 
             if (jobData.customerId) {
@@ -67,25 +68,30 @@ function TaskDetail() {
         }
     };
 
-    // --- FUNCIONES DE PASOS (LOGICA RECUPERADA) ---
+    // --- FUNCIONES DE PASOS (CORREGIDAS PARA USAR tasks[0].steps) ---
 
     const handleAddStep = async () => {
         if (!newStepData.name.trim()) return alert('El nombre del paso es requerido');
 
         const newStep = {
-            name: newStepData.name,
+            description: newStepData.name,
             comment: newStepData.comment || '',
-            photos: []
+            photo_before: null,
+            photo_after: null,
+            video_url: null
         };
-        const updatedSteps = [...(job.taskSteps || []), newStep];
 
         try {
-            await fetch(`${API_URL}/api/jobs/${id}`, {
-                method: 'PUT',
+            // Usar el endpoint correcto del backend
+            const taskId = job.tasks[0]._id;
+            await fetch(`${API_URL}/api/jobs/${id}/tasks/${taskId}/steps`, {
+                method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...job, taskSteps: updatedSteps })
+                body: JSON.stringify(newStep)
             });
-            setJob({ ...job, taskSteps: updatedSteps });
+
+            // Recargar datos para mostrar el nuevo paso
+            await fetchJobDetails();
             setNewStepData({ name: '', comment: '' });
             setShowAddStepModal(false);
         } catch (error) {
@@ -96,20 +102,24 @@ function TaskDetail() {
 
     const handleDeleteStep = async (stepIndex) => {
         if (!window.confirm('¿Estás seguro de eliminar este paso?')) return;
-        const updatedSteps = job.taskSteps.filter((_, i) => i !== stepIndex);
+
         try {
+            const updatedTasks = [...job.tasks];
+            updatedTasks[0].steps.splice(stepIndex, 1);
+
             await fetch(`${API_URL}/api/jobs/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...job, taskSteps: updatedSteps })
+                body: JSON.stringify({ ...job, tasks: updatedTasks })
             });
-            setJob({ ...job, taskSteps: updatedSteps });
+
+            await fetchJobDetails();
         } catch (error) {
             console.error('Error deleting step:', error);
         }
     };
 
-    const handleUploadPhoto = async (stepIndex, file) => {
+    const handleUploadPhoto = async (stepIndex, file, photoType = 'photo_before') => {
         if (!file) return;
         const formData = new FormData();
         formData.append('file', file);
@@ -123,22 +133,30 @@ function TaskDetail() {
             const uploadData = await uploadRes.json();
             if (!uploadRes.ok) throw new Error(uploadData.error || 'Error uploading');
 
-            // 2. Guardar URL en el paso correspondiente
-            const updatedSteps = [...job.taskSteps];
-            if (!updatedSteps[stepIndex].photos) updatedSteps[stepIndex].photos = [];
+            // 2. Actualizar el paso con la URL
+            const updatedTasks = [...job.tasks];
+            const step = updatedTasks[0].steps[stepIndex];
 
-            updatedSteps[stepIndex].photos.push({
-                url: uploadData.url,
-                label: file.name,
-                uploadedAt: new Date().toISOString()
-            });
+            // Determinar si es video o imagen
+            const isVideoFile = file.type.startsWith('video/');
+            if (isVideoFile) {
+                step.video_url = uploadData.url;
+            } else {
+                // Si ya hay photo_before, usar photo_after
+                if (step.photo_before) {
+                    step.photo_after = uploadData.url;
+                } else {
+                    step.photo_before = uploadData.url;
+                }
+            }
 
             await fetch(`${API_URL}/api/jobs/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...job, taskSteps: updatedSteps })
+                body: JSON.stringify({ ...job, tasks: updatedTasks })
             });
-            setJob({ ...job, taskSteps: updatedSteps });
+
+            await fetchJobDetails();
             alert('Archivo subido exitosamente');
         } catch (error) {
             console.error('Error uploading photo:', error);
@@ -146,18 +164,20 @@ function TaskDetail() {
         }
     };
 
-    const handleDeletePhoto = async (stepIndex, photoIndex) => {
+    const handleDeletePhoto = async (stepIndex, photoType) => {
         if (!window.confirm('¿Eliminar este archivo?')) return;
-        const updatedSteps = [...job.taskSteps];
-        updatedSteps[stepIndex].photos.splice(photoIndex, 1);
 
         try {
+            const updatedTasks = [...job.tasks];
+            updatedTasks[0].steps[stepIndex][photoType] = null;
+
             await fetch(`${API_URL}/api/jobs/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...job, taskSteps: updatedSteps })
+                body: JSON.stringify({ ...job, tasks: updatedTasks })
             });
-            setJob({ ...job, taskSteps: updatedSteps });
+
+            await fetchJobDetails();
         } catch (error) {
             console.error('Error deleting photo:', error);
         }
@@ -165,9 +185,14 @@ function TaskDetail() {
 
     if (loading) return <div className="task-detail-view" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}><h2>CARGANDO SISTEMA...</h2></div>;
     if (!job) return <div className="task-detail-view"><h2>ERROR: TRABAJO NO ENCONTRADO</h2></div>;
+    if (!job.tasks || job.tasks.length === 0) return <div className="task-detail-view"><h2>ERROR: NO HAY TAREAS ASOCIADAS</h2></div>;
+
+    // Obtener los pasos de la primera tarea
+    const currentTask = job.tasks[0];
+    const steps = currentTask.steps || [];
 
     // Helpers para UI
-    const isVideo = (url) => url.match(/\.(mp4|webm|mov)$/i);
+    const isVideo = (url) => url && url.match(/\.(mp4|webm|mov)$/i);
 
     return (
         <div className="task-detail-view">
@@ -248,17 +273,20 @@ function TaskDetail() {
                 <div className="action-console">
                     <div className="vehicle-header">
                         <h2 style={{ color: '#d900ff' }}>SECCIÓN 2: PROCESO TÉCNICO</h2>
+                        <p style={{ fontSize: '0.9rem', color: '#888', marginTop: '0.5rem' }}>
+                            Tarea: {currentTask.title}
+                        </p>
                     </div>
 
                     <div className="steps-list">
-                        {(!job.taskSteps || job.taskSteps.length === 0) && (
+                        {steps.length === 0 && (
                             <div style={{ textAlign: 'center', padding: '2rem', color: '#666' }}>
                                 <p>No hay pasos registrados aún.</p>
                                 <p>Usa el botón "NUEVO PASO" arriba a la derecha.</p>
                             </div>
                         )}
 
-                        {job.taskSteps && job.taskSteps.map((step, index) => (
+                        {steps.map((step, index) => (
                             <div key={index} className="action-step">
                                 <div className="step-header">
                                     <h3>PASO #{index + 1}</h3>
@@ -266,28 +294,19 @@ function TaskDetail() {
                                         <FaTrash /> ELIMINAR
                                     </button>
                                 </div>
-                                <h4 style={{ fontSize: '1.2rem', color: '#fff' }}>{step.name}</h4>
-
-                                {step.comment && (
-                                    <div className="step-comment">
-                                        <h5>COMENTARIO TÉCNICO:</h5>
-                                        <p>{step.comment}</p>
-                                    </div>
-                                )}
+                                <h4 style={{ fontSize: '1.2rem', color: '#fff' }}>{step.description}</h4>
 
                                 {/* Galería Multimedia del Paso */}
                                 <div className="media-gallery" style={{ marginTop: '1rem' }}>
                                     <h5>EVIDENCIA MULTIMEDIA</h5>
                                     <div className="gallery-grid">
-                                        {step.photos && step.photos.map((photo, pIndex) => (
-                                            <div key={pIndex} className="gallery-item">
-                                                {isVideo(photo.url) ? (
-                                                    <video src={photo.url} controls style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                                ) : (
-                                                    <img src={photo.url} alt="Evidencia" onClick={() => window.open(photo.url, '_blank')} style={{ cursor: 'pointer' }} />
-                                                )}
+                                        {/* Foto ANTES */}
+                                        {step.photo_before && (
+                                            <div className="gallery-item">
+                                                <img src={step.photo_before} alt="Antes" onClick={() => window.open(step.photo_before, '_blank')} style={{ cursor: 'pointer' }} />
+                                                <span style={{ position: 'absolute', bottom: '5px', left: '5px', background: 'rgba(0,0,0,0.7)', padding: '2px 6px', fontSize: '0.7rem', borderRadius: '3px' }}>ANTES</span>
                                                 <button
-                                                    onClick={() => handleDeletePhoto(index, pIndex)}
+                                                    onClick={() => handleDeletePhoto(index, 'photo_before')}
                                                     style={{
                                                         position: 'absolute', top: '5px', right: '5px',
                                                         background: 'rgba(255, 0, 85, 0.8)', border: 'none', borderRadius: '50%',
@@ -298,7 +317,45 @@ function TaskDetail() {
                                                     <FaTimes size={12} />
                                                 </button>
                                             </div>
-                                        ))}
+                                        )}
+
+                                        {/* Foto DESPUÉS */}
+                                        {step.photo_after && (
+                                            <div className="gallery-item">
+                                                <img src={step.photo_after} alt="Después" onClick={() => window.open(step.photo_after, '_blank')} style={{ cursor: 'pointer' }} />
+                                                <span style={{ position: 'absolute', bottom: '5px', left: '5px', background: 'rgba(0,0,0,0.7)', padding: '2px 6px', fontSize: '0.7rem', borderRadius: '3px' }}>DESPUÉS</span>
+                                                <button
+                                                    onClick={() => handleDeletePhoto(index, 'photo_after')}
+                                                    style={{
+                                                        position: 'absolute', top: '5px', right: '5px',
+                                                        background: 'rgba(255, 0, 85, 0.8)', border: 'none', borderRadius: '50%',
+                                                        width: '25px', height: '25px', display: 'flex',
+                                                        alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'white'
+                                                    }}
+                                                >
+                                                    <FaTimes size={12} />
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        {/* Video */}
+                                        {step.video_url && (
+                                            <div className="gallery-item">
+                                                <video src={step.video_url} controls style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                <span style={{ position: 'absolute', bottom: '5px', left: '5px', background: 'rgba(0,0,0,0.7)', padding: '2px 6px', fontSize: '0.7rem', borderRadius: '3px' }}>VIDEO</span>
+                                                <button
+                                                    onClick={() => handleDeletePhoto(index, 'video_url')}
+                                                    style={{
+                                                        position: 'absolute', top: '5px', right: '5px',
+                                                        background: 'rgba(255, 0, 85, 0.8)', border: 'none', borderRadius: '50%',
+                                                        width: '25px', height: '25px', display: 'flex',
+                                                        alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'white'
+                                                    }}
+                                                >
+                                                    <FaTimes size={12} />
+                                                </button>
+                                            </div>
+                                        )}
 
                                         {/* Botón de Subida Integrado */}
                                         <div className="gallery-item" style={{ border: '2px dashed #00f3ff', background: 'rgba(0, 243, 255, 0.05)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -337,17 +394,6 @@ function TaskDetail() {
                                 onChange={(e) => setNewStepData({ ...newStepData, name: e.target.value })}
                                 style={{ width: '100%', padding: '10px', background: '#0a0a15', border: '1px solid #333', color: '#fff', borderRadius: '4px' }}
                                 autoFocus
-                            />
-                        </div>
-
-                        <div style={{ marginBottom: '2rem' }}>
-                            <label style={{ display: 'block', color: '#aaa', marginBottom: '0.5rem', fontSize: '0.8rem' }}>COMENTARIO (Opcional)</label>
-                            <textarea
-                                rows="3"
-                                placeholder="Detalles técnicos..."
-                                value={newStepData.comment}
-                                onChange={(e) => setNewStepData({ ...newStepData, comment: e.target.value })}
-                                style={{ width: '100%', padding: '10px', background: '#0a0a15', border: '1px solid #333', color: '#fff', borderRadius: '4px' }}
                             />
                         </div>
 
