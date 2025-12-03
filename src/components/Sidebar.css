@@ -30,7 +30,7 @@
 }
 
 .logo-container:hover .flow-text {
-    text-shadow: 0 0 20px rgba(255, 0, 255, 1), 0 0 30px rgba(255, 0, 255, 0.5);
+    text-shadow: 0 0 20px rgba(0, 243, 255, 1), 0 0 30px rgba(0, 243, 255, 0.5);
 }
 
 .neon-logo {
@@ -44,8 +44,8 @@
 }
 
 .flow-text {
-    color: #ff00ff;
-    text-shadow: 0 0 10px rgba(255, 0, 255, 0.8);
+    color: var(--neon-cyan);
+    text-shadow: 0 0 10px rgba(0, 243, 255, 0.8);
 }
 
 .nav-menu {
@@ -81,13 +81,13 @@
 
 /* Active State - The "Glow" */
 .nav-item.active {
-    background: linear-gradient(90deg, rgba(255, 0, 255, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
-    border-left: 4px solid #ff00ff;
+    background: linear-gradient(90deg, rgba(0, 243, 255, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
+    border-left: 4px solid var(--neon-cyan);
     color: #fff;
-    box-shadow: -5px 0 15px rgba(255, 0, 255, 0.3);
+    box-shadow: -5px 0 15px rgba(0, 243, 255, 0.3);
 }
 
-/* Specific colors for specific items if needed */
+/* Specific colors for specific items if needed - UNIFIED TO CYAN/BLUE THEME */
 .nav-item:nth-child(1).active {
     border-color: #00f3ff;
     background: linear-gradient(90deg, rgba(0, 243, 255, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
@@ -95,15 +95,15 @@
 }
 
 .nav-item:nth-child(2).active {
-    border-color: #d900ff;
-    background: linear-gradient(90deg, rgba(217, 0, 255, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
-    box-shadow: -5px 0 15px rgba(217, 0, 255, 0.3);
+    border-color: #00f3ff;
+    background: linear-gradient(90deg, rgba(0, 243, 255, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
+    box-shadow: -5px 0 15px rgba(0, 243, 255, 0.3);
 }
 
 .nav-item:nth-child(3).active {
-    border-color: #00ff00;
-    background: linear-gradient(90deg, rgba(0, 255, 0, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
-    box-shadow: -5px 0 15px rgba(0, 255, 0, 0.3);
+    border-color: #00f3ff;
+    background: linear-gradient(90deg, rgba(0, 243, 255, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
+    box-shadow: -5px 0 15px rgba(0, 243, 255, 0.3);
 }
 
 /* New Task Green */
@@ -114,9 +114,9 @@
 }
 
 .nav-item:nth-child(5).active {
-    border-color: #ff0055;
-    background: linear-gradient(90deg, rgba(255, 0, 85, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
-    box-shadow: -5px 0 15px rgba(255, 0, 85, 0.3);
+    border-color: #00f3ff;
+    background: linear-gradient(90deg, rgba(0, 243, 255, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
+    box-shadow: -5px 0 15px rgba(0, 243, 255, 0.3);
 }
 
 
@@ -220,8 +220,8 @@
     /* Active state móvil */
     .nav-item.active {
         border-left: none;
-        border-bottom: 3px solid #ff00ff;
-        box-shadow: 0 4px 15px rgba(255, 0, 255, 0.3);
+        border-bottom: 3px solid var(--neon-cyan);
+        box-shadow: 0 4px 15px rgba(0, 243, 255, 0.3);
     }
 
     .nav-item:nth-child(1).active {
@@ -230,13 +230,13 @@
     }
 
     .nav-item:nth-child(2).active {
-        border-bottom-color: #d900ff;
-        box-shadow: 0 4px 15px rgba(217, 0, 255, 0.3);
+        border-bottom-color: #00f3ff;
+        box-shadow: 0 4px 15px rgba(0, 243, 255, 0.3);
     }
 
     .nav-item:nth-child(3).active {
-        border-bottom-color: #00ff00;
-        box-shadow: 0 4px 15px rgba(0, 255, 0, 0.3);
+        border-bottom-color: #00f3ff;
+        box-shadow: 0 4px 15px rgba(0, 243, 255, 0.3);
     }
 
     .nav-item:nth-child(4).active {
@@ -245,8 +245,8 @@
     }
 
     .nav-item:nth-child(5).active {
-        border-bottom-color: #ff0055;
-        box-shadow: 0 4px 15px rgba(255, 0, 85, 0.3);
+        border-bottom-color: #00f3ff;
+        box-shadow: 0 4px 15px rgba(0, 243, 255, 0.3);
     }
 
     /* Hover en móvil */

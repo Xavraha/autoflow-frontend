@@ -107,7 +107,7 @@ textarea.form-control {
 
 .decode-btn {
     padding: 0.8rem 1.5rem;
-    background: linear-gradient(135deg, #ff00ff, #00f3ff);
+    background: linear-gradient(135deg, var(--neon-cyan), #00f3ff);
     border: none;
     border-radius: 4px;
     color: #fff;

@@ -40,7 +40,7 @@
 }
 
 .neon-button {
-    background: linear-gradient(90deg, #d900ff, #ff00ff);
+    background: linear-gradient(90deg, var(--neon-cyan), #00f3ff);
     border: none;
     border-radius: 8px;
     padding: 12px 24px;
