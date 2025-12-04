@@ -269,6 +269,61 @@ const NewTask = () => {
                                 placeholder="e.g., Gasoline"
                             />
                         </div>
+                        <div className="form-group">
+                            <label>CYLINDERS</label>
+                            <input
+                                type="text"
+                                name="vehicle.engineCylinders"
+                                value={formData.vehicleInfo.engineCylinders}
+                                onChange={handleChange}
+                                className="form-control"
+                                placeholder="e.g., 4"
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>MOTOR CC</label>
+                            <input
+                                type="text"
+                                name="vehicle.displacementL"
+                                value={formData.vehicleInfo.displacementL}
+                                onChange={handleChange}
+                                className="form-control"
+                                placeholder="e.g., 2.0"
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>TRIM</label>
+                            <input
+                                type="text"
+                                name="vehicle.trim"
+                                value={formData.vehicleInfo.trim}
+                                onChange={handleChange}
+                                className="form-control"
+                                placeholder="e.g., LE, XLE"
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>BODY TYPE</label>
+                            <input
+                                type="text"
+                                name="vehicle.vehicleType"
+                                value={formData.vehicleInfo.vehicleType}
+                                onChange={handleChange}
+                                className="form-control"
+                                placeholder="e.g., Sedan"
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>TRANSMISSION</label>
+                            <input
+                                type="text"
+                                name="vehicle.transmission"
+                                value={formData.vehicleInfo.transmission}
+                                onChange={handleChange}
+                                className="form-control"
+                                placeholder="e.g., Automatic"
+                            />
+                        </div>
                     </div>
                 </div>
 

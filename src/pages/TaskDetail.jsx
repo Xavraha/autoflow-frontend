@@ -278,6 +278,7 @@ function TaskDetail() {
                             <div className="info-item"><span className="info-label">MOTOR CC:</span><span className="info-value">{job.vehicleInfo?.displacementL || 'N/A'}</span></div>
                             <div className="info-item"><span className="info-label">TRIM:</span><span className="info-value">{job.vehicleInfo?.trim || 'N/A'}</span></div>
                             <div className="info-item"><span className="info-label">BODY:</span><span className="info-value">{job.vehicleInfo?.vehicleType || 'N/A'}</span></div>
+                            <div className="info-item"><span className="info-label">TÉCNICO:</span><span className="info-value">{currentTask?.technician || 'N/A'}</span></div>
                             <div className="info-item"><span className="info-label">CLIENTE:</span><span className="info-value">{customer?.name || 'N/A'}</span></div>
                             <div className="info-item"><span className="info-label">FUEL:</span><span className="info-value">{job.vehicleInfo?.fuelType || 'N/A'}</span></div>
                             <div className="info-item"><span className="info-label">VIN CODE:</span><span className="info-value">{job.vehicleInfo?.vin || 'N/A'}</span></div>
