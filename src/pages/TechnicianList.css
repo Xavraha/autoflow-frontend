@@ -120,7 +120,6 @@
     width: 120px;
     height: 120px;
     border-radius: 50%;
-    /* Circular for now, could be hex */
     border: 2px solid var(--neon-cyan);
     margin-bottom: 1rem;
     position: relative;
@@ -140,37 +139,6 @@
 .avatar-placeholder {
     font-size: 3rem;
     color: var(--neon-cyan);
-}
-
-.scan-line {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: rgba(0, 255, 255, 0.8);
-    box-shadow: 0 0 4px var(--neon-cyan);
-    animation: scan 2s linear infinite;
-}
-
-@keyframes scan {
-    0% {
-        top: 0;
-        opacity: 0;
-    }
-
-    10% {
-        opacity: 1;
-    }
-
-    90% {
-        opacity: 1;
-    }
-
-    100% {
-        top: 100%;
-        opacity: 0;
-    }
 }
 
 .tech-name {
@@ -253,35 +221,9 @@
     border: 1px solid #f00;
     color: #f00;
     flex: 0 0 40px;
-    /* Square button */
 }
 
 .delete-btn:hover {
     background: #f00;
     color: #fff;
-}
-
-.loading-screen {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    font-family: 'Orbitron', sans-serif;
-    color: var(--neon-cyan);
-    font-size: 2rem;
-    animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-    0% {
-        opacity: 0.5;
-    }
-
-    50% {
-        opacity: 1;
-    }
-
-    100% {
-        opacity: 0.5;
-    }
 }

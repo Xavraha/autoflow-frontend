@@ -7,6 +7,7 @@ import './ClientList.css';
 
 function ClientList() {
     const [clients, setClients] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
 
@@ -21,6 +22,8 @@ function ClientList() {
             setClients(data);
         } catch (error) {
             console.error('Error fetching clients:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -48,6 +51,10 @@ function ClientList() {
         client.phone?.includes(searchTerm) ||
         client.email?.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    if (loading) {
+        return <div className="loading-screen">LOADING CLIENTS DATA...</div>;
+    }
 
     return (
         <div className="client-list-view">

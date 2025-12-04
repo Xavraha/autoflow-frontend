@@ -24,6 +24,7 @@ function App() {
   // --- ESTADOS ---
   const [jobs, setJobs] = useState([]);
   const [customers, setCustomers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // --- LÓGICA PARA OBTENER DATOS ---
   const fetchAllData = async () => {
@@ -38,6 +39,8 @@ function App() {
       setCustomers(customersData);
     } catch (error) {
       console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -62,7 +65,7 @@ function App() {
         <Route path="/new-task" element={<NewTask />} />
 
         {/* Tareas (Kanban) */}
-        <Route path="/tasks" element={<KanbanBoard jobs={jobs} customers={customers} refreshJobs={fetchAllData} />} />
+        <Route path="/tasks" element={<KanbanBoard jobs={jobs} customers={customers} refreshJobs={fetchAllData} loading={loading} />} />
         <Route path="/tasks/new" element={<NewTask />} />
         <Route path="/tasks/:id" element={<TaskDetail />} />
 

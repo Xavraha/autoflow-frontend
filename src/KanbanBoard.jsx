@@ -22,7 +22,7 @@ const STATUS_COLORS = {
   canceled: "#6c757d"
 };
 
-function KanbanBoard({ jobs, customers, refreshJobs }) {
+function KanbanBoard({ jobs, customers, refreshJobs, loading }) {
   const navigate = useNavigate();
   const [stats, setStats] = useState({
     vehiclesInShop: 0,
@@ -60,6 +60,10 @@ function KanbanBoard({ jobs, customers, refreshJobs }) {
     acc[status].push(job);
     return acc;
   }, {});
+
+  if (loading) {
+    return <div className="loading-screen">LOADING TASKS DATA...</div>;
+  }
 
   return (
     <div className="kanban-view">

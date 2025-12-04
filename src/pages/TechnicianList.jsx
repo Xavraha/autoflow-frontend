@@ -70,7 +70,6 @@ const TechnicianList = () => {
                                         <FaUserAstronaut />
                                     </div>
                                 )}
-                                <div className="scan-line"></div>
                             </div>
 
                             <h2 className="tech-name">{tech.name}</h2>
