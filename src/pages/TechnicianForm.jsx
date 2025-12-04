@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FaUserAstronaut, FaIdCard, FaTools, FaSave, FaArrowLeft, FaBolt, FaMicrochip } from 'react-icons/fa';
+import { API_URL } from '../apiConfig';
 import './TechnicianForm.css';
 
 const TechnicianForm = () => {
@@ -35,7 +36,7 @@ const TechnicianForm = () => {
 
     const fetchTechnician = async () => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/technicians`);
+            const response = await fetch(`${API_URL}/api/technicians`);
             if (response.ok) {
                 const technicians = await response.json();
                 const tech = technicians.find(t => t._id === id);
@@ -72,7 +73,7 @@ const TechnicianForm = () => {
         formDataUpload.append('file', file);
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/upload`, {
+            const response = await fetch(`${API_URL}/api/upload`, {
                 method: 'POST',
                 body: formDataUpload,
             });
@@ -96,8 +97,8 @@ const TechnicianForm = () => {
         setLoading(true);
 
         const url = isEditMode
-            ? `${import.meta.env.VITE_API_URL}/api/technicians/${id}`
-            : `${import.meta.env.VITE_API_URL}/api/technicians`;
+            ? `${API_URL}/api/technicians/${id}`
+            : `${API_URL}/api/technicians`;
 
         const method = isEditMode ? 'PUT' : 'POST';
 

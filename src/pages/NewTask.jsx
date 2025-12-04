@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaCar, FaUser, FaTasks, FaSave, FaArrowLeft, FaSearch } from 'react-icons/fa';
+import { FaCar, FaUser, FaTasks, FaSave, FaArrowLeft, FaSearch, FaCamera } from 'react-icons/fa';
 import { API_URL } from '../apiConfig';
+import VinScanner from '../components/VinScanner';
 import './NewTask.css';
 
 const NewTask = () => {
@@ -11,6 +12,7 @@ const NewTask = () => {
     const [loading, setLoading] = useState(false);
     const [decodingVin, setDecodingVin] = useState(false);
     const [error, setError] = useState('');
+    const [showScanner, setShowScanner] = useState(false);
 
     const [formData, setFormData] = useState({
         customerId: '',
@@ -41,7 +43,7 @@ const NewTask = () => {
 
     const fetchCustomers = async () => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/customers`);
+            const response = await fetch(`${API_URL}/api/customers`);
             if (response.ok) {
                 const data = await response.json();
                 setCustomers(data);
@@ -53,7 +55,7 @@ const NewTask = () => {
 
     const fetchTechnicians = async () => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/technicians`);
+            const response = await fetch(`${API_URL}/api/technicians`);
             if (response.ok) {
                 const data = await response.json();
                 setTechnicians(data);
@@ -61,6 +63,13 @@ const NewTask = () => {
         } catch (error) {
             console.error('Error fetching technicians:', error);
         }
+    };
+
+    const handleVinScan = (scannedVin) => {
+        setFormData(prev => ({ ...prev, vin: scannedVin }));
+        setShowScanner(false);
+        // Optionally auto-decode after scan
+        // handleVinDecode(); 
     };
 
     const handleVinDecode = async () => {
@@ -195,15 +204,26 @@ const NewTask = () => {
                     <div className="vin-decoder-group">
                         <div className="form-group">
                             <label>VIN CODE</label>
-                            <input
-                                type="text"
-                                name="vin"
-                                value={formData.vin}
-                                onChange={handleChange}
-                                className="form-control"
-                                placeholder="Enter 17-character VIN"
-                                maxLength="17"
-                            />
+                            <div style={{ display: 'flex', gap: '10px' }}>
+                                <input
+                                    type="text"
+                                    name="vin"
+                                    value={formData.vin}
+                                    onChange={handleChange}
+                                    className="form-control"
+                                    placeholder="Enter 17-character VIN"
+                                    maxLength="17"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowScanner(true)}
+                                    className="decode-btn"
+                                    style={{ minWidth: '60px', padding: '0 10px' }}
+                                    title="Scan with Camera"
+                                >
+                                    <FaCamera /> CAM
+                                </button>
+                            </div>
                         </div>
                         <button
                             type="button"
@@ -223,6 +243,13 @@ const NewTask = () => {
                             )}
                         </button>
                     </div>
+
+                    {showScanner && (
+                        <VinScanner
+                            onVinScan={handleVinScan}
+                            onClose={() => setShowScanner(false)}
+                        />
+                    )}
 
                     <div className="vehicle-info-grid" style={{ marginTop: '1.5rem' }}>
                         <div className="form-group">
