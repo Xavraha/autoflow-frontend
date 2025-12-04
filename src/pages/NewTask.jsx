@@ -23,7 +23,9 @@ const NewTask = () => {
             vehicleType: '',
             engineCylinders: '',
             fuelType: '',
-            transmission: ''
+            transmission: '',
+            displacementL: '',
+            trim: ''
         },
         taskInfo: {
             title: '',
@@ -84,7 +86,9 @@ const NewTask = () => {
                         vehicleType: data.vehicleType || '',
                         engineCylinders: data.engineCylinders || '',
                         fuelType: data.fuelType || '',
-                        transmission: data.transmission || ''
+                        transmission: data.transmission || '',
+                        displacementL: data.displacementL || '',
+                        trim: data.trim || ''
                     }
                 }));
             } else {
@@ -123,10 +127,18 @@ const NewTask = () => {
         setError('');
 
         try {
+            const payload = {
+                ...formData,
+                vehicleInfo: {
+                    ...formData.vehicleInfo,
+                    vin: formData.vin
+                }
+            };
+
             const response = await fetch(`${import.meta.env.VITE_API_URL}/api/jobs`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(payload)
             });
 
             if (response.ok) {

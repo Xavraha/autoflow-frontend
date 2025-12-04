@@ -274,7 +274,10 @@ function TaskDetail() {
                             <div className="info-item"><span className="info-label">MARCA:</span><span className="info-value">{job.vehicleInfo?.make}</span></div>
                             <div className="info-item"><span className="info-label">MODELO:</span><span className="info-value">{job.vehicleInfo?.model}</span></div>
                             <div className="info-item"><span className="info-label">AÑO:</span><span className="info-value">{job.vehicleInfo?.year}</span></div>
-                            <div className="info-item"><span className="info-label">MOTOR:</span><span className="info-value">{job.vehicleInfo?.engineCylinders || 'N/A'}</span></div>
+                            <div className="info-item"><span className="info-label">CILINDROS:</span><span className="info-value">{job.vehicleInfo?.engineCylinders || 'N/A'}</span></div>
+                            <div className="info-item"><span className="info-label">MOTOR CC:</span><span className="info-value">{job.vehicleInfo?.displacementL || 'N/A'}</span></div>
+                            <div className="info-item"><span className="info-label">TRIM:</span><span className="info-value">{job.vehicleInfo?.trim || 'N/A'}</span></div>
+                            <div className="info-item"><span className="info-label">BODY:</span><span className="info-value">{job.vehicleInfo?.vehicleType || 'N/A'}</span></div>
                             <div className="info-item"><span className="info-label">CLIENTE:</span><span className="info-value">{customer?.name || 'N/A'}</span></div>
                             <div className="info-item"><span className="info-label">FUEL:</span><span className="info-value">{job.vehicleInfo?.fuelType || 'N/A'}</span></div>
                             <div className="info-item"><span className="info-label">VIN CODE:</span><span className="info-value">{job.vehicleInfo?.vin || 'N/A'}</span></div>
@@ -294,8 +297,8 @@ function TaskDetail() {
                     <div className="steps-list">
                         {steps.length === 0 && (
                             <div className="no-steps-message">
-                                <p>No hay pasos registrados aÃºn.</p>
-                                <p>Usa el botÃ³n "NUEVO PASO" arriba a la derecha.</p>
+                                <p>No hay pasos registrados aún.</p>
+                                <p>Usa el botón "NUEVO PASO" arriba a la derecha.</p>
                             </div>
                         )}
 
