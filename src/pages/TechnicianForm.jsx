@@ -114,11 +114,12 @@ const TechnicianForm = () => {
             if (response.ok) {
                 navigate('/technicians');
             } else {
-                alert('Error saving technician');
+                const data = await response.json();
+                alert(`Error saving technician: ${data.message || 'Unknown error'}`);
             }
         } catch (error) {
             console.error('Error saving technician:', error);
-            alert('Error saving technician');
+            alert(`Error saving technician: ${error.message}`);
         } finally {
             setLoading(false);
         }
