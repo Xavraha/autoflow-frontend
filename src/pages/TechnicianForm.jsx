@@ -103,12 +103,17 @@ const TechnicianForm = () => {
         const method = isEditMode ? 'PUT' : 'POST';
 
         try {
+            const payload = {
+                ...formData,
+                level: Number(formData.level) // Ensure level is a number
+            };
+
             const response = await fetch(url, {
                 method: method,
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify(payload),
             });
 
             if (response.ok) {
@@ -195,8 +200,9 @@ const TechnicianForm = () => {
                                 value={formData.specialty}
                                 onChange={handleChange}
                                 className="neon-select"
+                                required
                             >
-                                <option value="">SELECT SPECIALTY</option>
+                                <option value="" disabled>SELECT SPECIALTY</option>
                                 <option value="Mechanic">MECHANIC</option>
                                 <option value="Electrician">ELECTRICIAN</option>
                                 <option value="Software">SOFTWARE ENGINEER</option>
