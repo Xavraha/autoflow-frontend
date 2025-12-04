@@ -6,7 +6,7 @@ import { API_URL } from '../apiConfig';
 import './TaskDetail.css';
 
 const STATUS_LABELS = {
-    pending_diagnosis: "DIAGNÃ“STICO PENDIENTE",
+    pending_diagnosis: "DIAGNÓSTICO PENDIENTE",
     awaiting_parts: "EN ESPERA DE PIEZAS",
     in_progress: "EN PROGRESO",
     completed: "COMPLETADO",
@@ -55,7 +55,7 @@ function TaskDetail() {
     // Actualizar Estado General
     const handleStatusChange = async (newStatus) => {
         try {
-            // ActualizaciÃ³n optimista para rapidez visual
+            // Actualización optimista para rapidez visual
             setJob({ ...job, status: newStatus });
             await fetch(`${API_URL}/api/jobs/${id}/status`, {
                 method: 'PATCH',
@@ -103,7 +103,7 @@ function TaskDetail() {
             const result = await response.json();
             console.log('Paso creado exitosamente:', result);
 
-            //Recargar la pÃ¡gina completa para mostrar el nuevo paso
+            //Recargar la página completa para mostrar el nuevo paso
             alert('Paso creado exitosamente');
             window.location.reload();
         } catch (error) {
@@ -113,7 +113,7 @@ function TaskDetail() {
     };
 
     const handleDeleteStep = async (stepIndex) => {
-        if (!window.confirm('Â¿EstÃ¡s seguro de eliminar este paso?')) return;
+        if (!window.confirm('¿Estás seguro de eliminar este paso?')) return;
 
         try {
             console.log('Eliminando paso:', stepIndex);
@@ -177,7 +177,7 @@ function TaskDetail() {
                 step.photo_after = null;
             } else {
                 // Solo una imagen por paso
-                console.log('AÃ±adiendo como photo_before');
+                console.log('Añadiendo como photo_before');
                 step.photo_before = uploadData.url;
                 step.photo_after = null;
                 step.video_url = null;
@@ -206,7 +206,7 @@ function TaskDetail() {
     };
 
     const handleDeletePhoto = async (stepIndex, photoType) => {
-        if (!window.confirm('Â¿Eliminar este archivo?')) return;
+        if (!window.confirm('¿Eliminar este archivo?')) return;
 
         try {
             const updatedTasks = [...job.tasks];
@@ -242,10 +242,10 @@ function TaskDetail() {
             </div>
 
             <div className="detail-layout">
-                {/* --- SECCIÃ“N SUPERIOR: ESTADO E INFO --- */}
+                {/* --- SECCIÓN SUPERIOR: ESTADO E INFO --- */}
                 <div className="top-section">
                     <div className="vehicle-header">
-                        <h2>ESTADO DEL VEHÃCULO</h2>
+                        <h2>ESTADO DEL VEHÍCULO</h2>
                     </div>
 
                     {/* Lista de Estados */}
@@ -264,16 +264,16 @@ function TaskDetail() {
                         </div>
                     </div>
 
-                    {/* Info VehÃ­culo */}
+                    {/* Info Vehículo */}
                     <div className="vehicle-info-grid">
-                        <h3>INFORMACIÃ“N DEL VEHÃCULO</h3>
+                        <h3>INFORMACIÓN DEL VEHÍCULO</h3>
 
                         {/* VIN Section - Full Width */}
 
                         <div className="info-grid">
                             <div className="info-item"><span className="info-label">MARCA:</span><span className="info-value">{job.vehicleInfo?.make}</span></div>
                             <div className="info-item"><span className="info-label">MODELO:</span><span className="info-value">{job.vehicleInfo?.model}</span></div>
-                            <div className="info-item"><span className="info-label">AÃ‘O:</span><span className="info-value">{job.vehicleInfo?.year}</span></div>
+                            <div className="info-item"><span className="info-label">AÑO:</span><span className="info-value">{job.vehicleInfo?.year}</span></div>
                             <div className="info-item"><span className="info-label">MOTOR:</span><span className="info-value">{job.vehicleInfo?.engineCylinders || 'N/A'}</span></div>
                             <div className="info-item"><span className="info-label">CLIENTE:</span><span className="info-value">{customer?.name || 'N/A'}</span></div>
                             <div className="info-item"><span className="info-label">FUEL:</span><span className="info-value">{job.vehicleInfo?.fuelType || 'N/A'}</span></div>
@@ -282,18 +282,14 @@ function TaskDetail() {
                     </div>
                 </div>
 
-                {/* --- SECCIÃ“N INFERIOR: PASOS (GRID) --- */}
+                {/* --- SECCIÓN INFERIOR: PASOS (GRID) --- */}
                 <div className="action-console">
                     <div className="section-header-row">
-                        <h2 className="section-title">SECCIÃ“N 2: {currentTask.title}</h2>
+                        <h2 className="section-title">Tarea: {currentTask.title}</h2>
                         <button className="add-step-btn" onClick={() => setShowAddStepModal(true)}>
                             <FaPlus /> NUEVO PASO
                         </button>
                     </div>
-
-                    <p style={{ fontSize: '0.9rem', color: '#888', marginTop: '0.5rem', marginBottom: '1.5rem' }}>
-                        Tarea: {currentTask.title}
-                    </p>
 
                     <div className="steps-list">
                         {steps.length === 0 && (
