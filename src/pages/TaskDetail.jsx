@@ -1,4 +1,4 @@
-// src/pages/TaskDetail.jsx
+﻿// src/pages/TaskDetail.jsx
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaPlus, FaTrash, FaCheckCircle, FaCamera, FaTimes, FaVideo } from 'react-icons/fa';
@@ -6,7 +6,7 @@ import { API_URL } from '../apiConfig';
 import './TaskDetail.css';
 
 const STATUS_LABELS = {
-    pending_diagnosis: "DIAGNÓSTICO PENDIENTE",
+    pending_diagnosis: "DIAGNÃ“STICO PENDIENTE",
     awaiting_parts: "EN ESPERA DE PIEZAS",
     in_progress: "EN PROGRESO",
     completed: "COMPLETADO",
@@ -55,7 +55,7 @@ function TaskDetail() {
     // Actualizar Estado General
     const handleStatusChange = async (newStatus) => {
         try {
-            // Actualización optimista para rapidez visual
+            // ActualizaciÃ³n optimista para rapidez visual
             setJob({ ...job, status: newStatus });
             await fetch(`${API_URL}/api/jobs/${id}/status`, {
                 method: 'PATCH',
@@ -103,7 +103,7 @@ function TaskDetail() {
             const result = await response.json();
             console.log('Paso creado exitosamente:', result);
 
-            //Recargar la página completa para mostrar el nuevo paso
+            //Recargar la pÃ¡gina completa para mostrar el nuevo paso
             alert('Paso creado exitosamente');
             window.location.reload();
         } catch (error) {
@@ -113,7 +113,7 @@ function TaskDetail() {
     };
 
     const handleDeleteStep = async (stepIndex) => {
-        if (!window.confirm('¿Estás seguro de eliminar este paso?')) return;
+        if (!window.confirm('Â¿EstÃ¡s seguro de eliminar este paso?')) return;
 
         try {
             console.log('Eliminando paso:', stepIndex);
@@ -177,7 +177,7 @@ function TaskDetail() {
                 step.photo_after = null;
             } else {
                 // Solo una imagen por paso
-                console.log('Añadiendo como photo_before');
+                console.log('AÃ±adiendo como photo_before');
                 step.photo_before = uploadData.url;
                 step.photo_after = null;
                 step.video_url = null;
@@ -206,7 +206,7 @@ function TaskDetail() {
     };
 
     const handleDeletePhoto = async (stepIndex, photoType) => {
-        if (!window.confirm('¿Eliminar este archivo?')) return;
+        if (!window.confirm('Â¿Eliminar este archivo?')) return;
 
         try {
             const updatedTasks = [...job.tasks];
@@ -215,7 +215,7 @@ function TaskDetail() {
             await fetch(`${API_URL}/api/jobs/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...job, tasks: updatedTasks })
+                body: JSON.stringify({ tasks: updatedTasks })
             });
 
             await fetchJobDetails(false);
@@ -242,10 +242,10 @@ function TaskDetail() {
             </div>
 
             <div className="detail-layout">
-                {/* --- SECCIÓN SUPERIOR: ESTADO E INFO --- */}
+                {/* --- SECCIÃ“N SUPERIOR: ESTADO E INFO --- */}
                 <div className="top-section">
                     <div className="vehicle-header">
-                        <h2>ESTADO DEL VEHÍCULO</h2>
+                        <h2>ESTADO DEL VEHÃCULO</h2>
                     </div>
 
                     {/* Lista de Estados */}
@@ -264,43 +264,28 @@ function TaskDetail() {
                         </div>
                     </div>
 
-                    {/* Info Vehículo */}
+                    {/* Info VehÃ­culo */}
                     <div className="vehicle-info-grid">
-                        <h3>INFORMACIÓN DEL VEHÍCULO</h3>
+                        <h3>INFORMACIÃ“N DEL VEHÃCULO</h3>
 
                         {/* VIN Section - Full Width */}
-                        <div className="vin-section" style={{ marginBottom: '1.5rem' }}>
-                            <span className="info-label" style={{ display: 'block', marginBottom: '0.5rem', color: '#00f3ff' }}>VIN CODE</span>
-                            <div className="vin-display" style={{
-                                background: 'rgba(10, 10, 20, 0.6)',
-                                padding: '1rem',
-                                border: '1px solid rgba(0, 243, 255, 0.3)',
-                                borderRadius: '6px',
-                                color: '#fff',
-                                fontFamily: 'Orbitron, sans-serif',
-                                fontSize: '1.1rem',
-                                letterSpacing: '2px',
-                                boxShadow: 'inset 0 0 10px rgba(0, 0, 0, 0.5)'
-                            }}>
-                                {job.vehicleInfo?.vin || 'N/A'}
-                            </div>
-                        </div>
 
                         <div className="info-grid">
                             <div className="info-item"><span className="info-label">MARCA:</span><span className="info-value">{job.vehicleInfo?.make}</span></div>
                             <div className="info-item"><span className="info-label">MODELO:</span><span className="info-value">{job.vehicleInfo?.model}</span></div>
-                            <div className="info-item"><span className="info-label">AÑO:</span><span className="info-value">{job.vehicleInfo?.year}</span></div>
+                            <div className="info-item"><span className="info-label">AÃ‘O:</span><span className="info-value">{job.vehicleInfo?.year}</span></div>
                             <div className="info-item"><span className="info-label">MOTOR:</span><span className="info-value">{job.vehicleInfo?.engineCylinders || 'N/A'}</span></div>
                             <div className="info-item"><span className="info-label">CLIENTE:</span><span className="info-value">{customer?.name || 'N/A'}</span></div>
                             <div className="info-item"><span className="info-label">FUEL:</span><span className="info-value">{job.vehicleInfo?.fuelType || 'N/A'}</span></div>
+                            <div className="info-item"><span className="info-label">VIN CODE:</span><span className="info-value">{job.vehicleInfo?.vin || 'N/A'}</span></div>
                         </div>
                     </div>
                 </div>
 
-                {/* --- SECCIÓN INFERIOR: PASOS (GRID) --- */}
+                {/* --- SECCIÃ“N INFERIOR: PASOS (GRID) --- */}
                 <div className="action-console">
                     <div className="section-header-row">
-                        <h2 className="section-title">SECCIÓN 2: PROCESO TÉCNICO</h2>
+                        <h2 className="section-title">SECCIÃ“N 2: {currentTask.title}</h2>
                         <button className="add-step-btn" onClick={() => setShowAddStepModal(true)}>
                             <FaPlus /> NUEVO PASO
                         </button>
@@ -313,8 +298,8 @@ function TaskDetail() {
                     <div className="steps-list">
                         {steps.length === 0 && (
                             <div className="no-steps-message">
-                                <p>No hay pasos registrados aún.</p>
-                                <p>Usa el botón "NUEVO PASO" arriba a la derecha.</p>
+                                <p>No hay pasos registrados aÃºn.</p>
+                                <p>Usa el botÃ³n "NUEVO PASO" arriba a la derecha.</p>
                             </div>
                         )}
 
@@ -328,16 +313,11 @@ function TaskDetail() {
                                     </button>
                                 </div>
 
-                                {/* 2. Título del Paso */}
-                                <h4 className="step-title">{step.description}</h4>
-
-                                {/* 3. Comentario Técnico */}
-                                {step.comment && (
-                                    <div className="step-comment">
-                                        <h5>COMENTARIO TÉCNICO:</h5>
-                                        <p>{step.comment}</p>
-                                    </div>
-                                )}
+                                {/* 2. & 3. Título y Comentario Unificados */}
+                                <div className="step-comment">
+                                    <h5 style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>{step.description}</h5>
+                                    {step.comment && <p>{step.comment}</p>}
+                                </div>
 
                                 {/* 4. Evidencia Multimedia */}
                                 <div className="media-gallery">
@@ -352,9 +332,9 @@ function TaskDetail() {
                                                     onClick={() => handleDeletePhoto(index, 'photo_before')}
                                                     style={{
                                                         position: 'absolute', top: '5px', right: '5px',
-                                                        background: 'rgba(255, 0, 85, 0.8)', border: 'none', borderRadius: '50%',
-                                                        width: '25px', height: '25px', display: 'flex',
-                                                        alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'white'
+                                                        background: 'rgba(255, 255, 255, 0.8)', border: 'none', borderRadius: '50%',
+                                                        width: '20px', height: '20px', display: 'flex',
+                                                        alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'black'
                                                     }}
                                                 >
                                                     <FaTimes size={12} />
@@ -362,18 +342,18 @@ function TaskDetail() {
                                             </div>
                                         )}
 
-                                        {/* Foto DESPUÉS */}
+                                        {/* Foto DESPUÃ‰S */}
                                         {step.photo_after && (
                                             <div className="gallery-item">
-                                                <img src={step.photo_after} alt="Después" onClick={() => window.open(step.photo_after, '_blank')} style={{ cursor: 'pointer' }} />
-                                                <span className="media-label">DESPUÉS</span>
+                                                <img src={step.photo_after} alt="DespuÃ©s" onClick={() => window.open(step.photo_after, '_blank')} style={{ cursor: 'pointer' }} />
+                                                <span className="media-label">DESPUÃ‰S</span>
                                                 <button
                                                     onClick={() => handleDeletePhoto(index, 'photo_after')}
                                                     style={{
                                                         position: 'absolute', top: '5px', right: '5px',
-                                                        background: 'rgba(255, 0, 85, 0.8)', border: 'none', borderRadius: '50%',
-                                                        width: '25px', height: '25px', display: 'flex',
-                                                        alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'white'
+                                                        background: 'rgba(255, 255, 255, 0.8)', border: 'none', borderRadius: '50%',
+                                                        width: '20px', height: '20px', display: 'flex',
+                                                        alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'black'
                                                     }}
                                                 >
                                                     <FaTimes size={12} />
@@ -390,9 +370,9 @@ function TaskDetail() {
                                                     onClick={() => handleDeletePhoto(index, 'video_url')}
                                                     style={{
                                                         position: 'absolute', top: '5px', right: '5px',
-                                                        background: 'rgba(255, 0, 85, 0.8)', border: 'none', borderRadius: '50%',
-                                                        width: '25px', height: '25px', display: 'flex',
-                                                        alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'white'
+                                                        background: 'rgba(255, 255, 255, 0.8)', border: 'none', borderRadius: '50%',
+                                                        width: '20px', height: '20px', display: 'flex',
+                                                        alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'black'
                                                     }}
                                                 >
                                                     <FaTimes size={12} />
@@ -400,7 +380,7 @@ function TaskDetail() {
                                             </div>
                                         )}
 
-                                        {/* Botón de Subida - Solo si NO hay media */}
+                                        {/* BotÃ³n de Subida - Solo si NO hay media */}
                                         {!step.photo_before && !step.video_url && (
                                             <div className="gallery-item" style={{ border: '2px dashed #00f3ff', background: 'rgba(0, 243, 255, 0.05)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                                 <input
@@ -445,7 +425,7 @@ function TaskDetail() {
                             <label style={{ display: 'block', color: '#aaa', marginBottom: '0.5rem', fontSize: '0.8rem' }}>COMENTARIO (Opcional)</label>
                             <textarea
                                 rows="3"
-                                placeholder="Detalles técnicos..."
+                                placeholder="Detalles tÃ©cnicos..."
                                 value={newStepData.comment}
                                 onChange={(e) => setNewStepData({ ...newStepData, comment: e.target.value })}
                                 style={{ width: '100%', padding: '10px', background: '#0a0a15', border: '1px solid #333', color: '#fff', borderRadius: '4px', resize: 'vertical' }}
